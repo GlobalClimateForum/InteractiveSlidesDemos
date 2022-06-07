@@ -1,66 +1,6 @@
 using Stipple, StippleUI, StipplePlotly
-
-pd(name; plot_type = "scatter") = PlotData(
-    x = [
-        "Jan2019",
-        "Feb2019",
-        "Mar2019",
-        "Apr2019",
-        "May2019",
-        "Jun2019",
-        "Jul2019",
-        "Aug2019",
-        "Sep2019",
-        "Oct2019",
-        "Nov2019",
-        "Dec2019",
-    ],
-    y = Int[rand(1:100_000) for x = 1:12],
-    plot = plot_type,
-    name = name,
-)
-
-
-@reactive! mutable struct Example <: ReactiveModel
-    data::R{Vector{PlotData}} = [pd("Random 1"), pd("Random 2")]
-    layout::R{PlotLayout} = PlotLayout(
-        plot_bgcolor = "#0000",
-        paper_bgcolor = "#0000",
-        title = PlotLayoutTitle(text = "Random numbers", font = Font(24)),
-    )
-    config::R{PlotConfig} = PlotConfig()
-
-    drawer::R{Bool} = false
-    show_bar::R{Bool} = false
-    show_plot::R{Bool} = false
-end
-
-model = Stipple.init(Example)
-
-function switch_plots(model)
-    println("hello")
-    if model.show_bar[]
-        setproperty!.(model.data[], :plot, "bar")
-    else
-        setproperty!.(model.data[], :plot, "scatter")
-    end
-    notify(model.data)
-    return model
-end
-
-function handlers(model)
-    on(model.isready) do ready
-        ready || return
-        push!(model)        
-    end
-    on(model.show_bar) do _
-        switch_plots(model)     
-    end
-    on(model.show_plot) do _
-        "helloooooo"     
-    end
-    model
-end
+include("Presentations.jl")
+using .Presentations
 
 function ui(model)
     page(model, 
@@ -100,7 +40,7 @@ function ui(model)
 end
 
 route("/") do
-    model |> handlers |> ui |> html
+    init_presentation() |> ui |> html
 end
 
 route("/2") do
