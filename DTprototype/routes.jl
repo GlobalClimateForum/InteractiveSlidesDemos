@@ -34,7 +34,7 @@ function ui(presentation)
 end
 
 function slide(id, args...; kwargs...)
-    row(class = "q-col-gutter-sm", args..., "v-if='$(id) == current_id'"; kwargs...)
+    row(class = "q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
 end
 
 route("/") do
