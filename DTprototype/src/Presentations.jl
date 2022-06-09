@@ -26,11 +26,12 @@ pd(name; plot_type = "scatter") = PlotData(
     data::R{Vector{PlotData}} = [pd("Random 1"), pd("Random 2")]
     layout::R{PlotLayout} = PlotLayout(
         plot_bgcolor = "#0000",
-        paper_bgcolor = "#0000",
+        paper_bgcolor = "#AAA",
         title = PlotLayoutTitle(text = "Random numbers", font = Font(24)),
     )
     config::R{PlotConfig} = PlotConfig()
 
+    current_id::R{Int8} = 1
     drawer::R{Bool} = false
     show_bar::R{Bool} = false
     show_plot::R{Bool} = false
