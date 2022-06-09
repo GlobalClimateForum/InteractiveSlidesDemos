@@ -10,6 +10,10 @@ function ui(presentation)
                   btn("",icon="menu", @click("drawer = ! drawer"))
                   quasar(:toolbar__title, "Example App")])
           )
+          quasar(:footer, quasar(:toolbar, [space(),
+                  icon("img:img/GCFlogo.png", size = "md"),
+                  quasar(:toolbar__title, "GCF")])
+          )
           drawer(side="left", v__model="drawer", [
               list([
                   item([
