@@ -9,7 +9,9 @@ function ui(presentation)
       StippleUI.Layouts.layout([
           quasar(:header, quasar(:toolbar, [
                   btn("",icon="menu", @click("drawer = ! drawer"))
-                  quasar(:toolbar__title, "Example App")])
+                  btn("",icon="chevron_left", @click("current_id--"))
+                  btn("",icon="navigate_next", @click("current_id++"))
+                  ])
           )
           quasar(:footer, quasar(:toolbar, [space(),
                   icon("img:img/GCFlogo.png", size = "md"),
@@ -35,7 +37,7 @@ function ui(presentation)
 end
 
 function render_slide(id::Int, args...; kwargs...)
-    row(class = "q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
+    cell(class = "text-center justify-center items-center", args..., @iif(:($id == current_id)); kwargs...)
 end
 
 route("/") do
