@@ -4,28 +4,32 @@ export init_presentation
 
 presentations = Dict{String, ReactiveModel}()
 
-pd(name; plot_type = "scatter") = PlotData(
-    x = [
-        "Jan2019",
-        "Feb2019",
-        "Mar2019",
-        "Apr2019",
-        "May2019",
-        "Jun2019",
-        "Jul2019",
-        "Aug2019",
-        "Sep2019",
-        "Oct2019",
-        "Nov2019",
-        "Dec2019",
-    ],
-    y = Int[rand(1:100_000) for x = 1:12],
-    plot = plot_type,
+x = [
+    "Jan2019",
+    "Feb2019",
+    "Mar2019",
+    "Apr2019",
+    "May2019",
+    "Jun2019",
+    "Jul2019",
+    "Aug2019",
+    "Sep2019",
+    "Oct2019",
+    "Nov2019",
+    "Dec2019",
+]
+
+pd(name) = PlotData(
+    x = x,
+    y = rand(12).*2,
     name = name,
 )
 
 @reactive! mutable struct Presentation <: ReactiveModel
-    data::R{Vector{PlotData}} = [pd("Random 1"), pd("Random 2")]
+    changename::R{Vector} = ["Increase"]
+    changenames::R{Vector} = ["Increase", "Decrease", "Sine"]
+    data::R{Vector{PlotData}} = [pd(name) for name in ["Team A", "Team B"]]
+    data2::R{Vector{PlotData}} = deepcopy(data)
     layout::R{PlotLayout} = PlotLayout(
         plot_bgcolor = "#0000",
         paper_bgcolor = "#AAA",
@@ -36,7 +40,6 @@ pd(name; plot_type = "scatter") = PlotData(
     current_id::R{Int8} = 1
     drawer::R{Bool} = false
     show_bar::R{Bool} = false
-    show_plot::R{Bool} = false
 end
 
 
@@ -49,27 +52,48 @@ function init_presentation(name)
     end
 end
 
-function switch_plots(presentation)
+function switch_plots!(presentation)
     println(string("show bar = ", presentation.show_bar[]))
     if presentation.show_bar[]
         setproperty!.(presentation.data[], :plot, "bar")
+        setproperty!.(presentation.data2[], :plot, "bar")
     else
         setproperty!.(presentation.data[], :plot, "scatter")
+        setproperty!.(presentation.data2[], :plot, "scatter")
     end
     notify(presentation.data)
+    notify(presentation.data2)
+    return presentation
+end
+
+function change_data!(presentation)
+    for i = 1:2
+        y = presentation.data[i].y
+        x = 1:12
+        if presentation.changename[1] == "Increase"
+            y += x./12
+        elseif presentation.changename[1] == "Decrease"
+            y -= x./12
+        else
+            y += sin.(x.*pi./6)
+        end
+        presentation.data2[i].y = y
+    end
+    notify(presentation.data2)
     return presentation
 end
 
 function add_handlers!(presentation)
     on(presentation.isready) do ready
         ready || return
+        change_data!(presentation) 
         push!(presentation)        
     end
     on(presentation.show_bar) do _
-        switch_plots(presentation)     
+        switch_plots!(presentation)     
     end
-    on(presentation.show_plot) do _
-        "helloooooo"     
+    on(presentation.changename) do _
+        change_data!(presentation)     
     end
     presentation
 end

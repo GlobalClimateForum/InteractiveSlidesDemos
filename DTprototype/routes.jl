@@ -37,7 +37,7 @@ function ui(presentation)
 end
 
 function render_slide(id::Int, args...; kwargs...)
-    cell(class = "text-center justify-center items-center", args..., @iif(:($id == current_id)); kwargs...)
+    cell(class = "text-center flex-center", args..., @iif(:($id == current_id)); kwargs...)
 end
 
 route("/") do
