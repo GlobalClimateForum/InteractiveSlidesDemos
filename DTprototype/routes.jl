@@ -34,7 +34,7 @@ function ui(presentation)
   ])
 end
 
-function render_slide(id, args...; kwargs...)
+function render_slide(id::Int, args...; kwargs...)
     row(class = "q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
 end
 
