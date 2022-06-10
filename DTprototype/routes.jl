@@ -39,5 +39,9 @@ function render_slide(id::Int, args...; kwargs...)
 end
 
 route("/") do
-  init_presentation() |> ui |> html
+  
 end
+
+route("/:name") do
+    init_presentation(params(:name)) |> ui |> html
+  end

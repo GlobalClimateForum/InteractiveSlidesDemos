@@ -2,6 +2,8 @@ module Presentations
 using Stipple, StipplePlotly
 export init_presentation
 
+presentations = Dict{String, ReactiveModel}()
+
 pd(name; plot_type = "scatter") = PlotData(
     x = [
         "Jan2019",
@@ -38,9 +40,13 @@ pd(name; plot_type = "scatter") = PlotData(
 end
 
 
-function init_presentation()
-    presentation = Stipple.init(Presentation)
-    return add_handlers!(presentation)
+function init_presentation(name)
+    if !haskey(presentations, name)
+        presentation = Stipple.init(Presentation)
+        presentations[name] = add_handlers!(presentation)
+    else
+        presentations[name]
+    end
 end
 
 function switch_plots(presentation)
