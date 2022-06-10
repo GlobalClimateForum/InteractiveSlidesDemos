@@ -3,6 +3,7 @@ using Stipple, StippleUI, StipplePlotly
 using Presentations
 
 function ui(presentation)
+  slides = include("slides.jl")
   page(presentation, 
   [
       StippleUI.Layouts.layout([
@@ -27,13 +28,13 @@ function ui(presentation)
               ])
           ])
           StippleUI.Layouts.page_container("",
-          include("slides.jl")
+            [render_slide(id, slide) for (id,slide) in enumerate(slides)]
           )
       ])
   ])
 end
 
-function slide(id, args...; kwargs...)
+function render_slide(id, args...; kwargs...)
     row(class = "q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
 end
 
