@@ -4,12 +4,19 @@ using Presentations
 
 function ui(presentation)
   slides = include("slides.jl")
-  page(presentation, 
+  page(presentation, style = "font-size:40px", prepend = style(
+    """
+    h1 {
+        font-size: 3em !important;
+        line-height: 1em !important;
+    }
+    """
+    ),
   [
       StippleUI.Layouts.layout([
           quasar(:header, quasar(:toolbar, [
                   btn("",icon="menu", @click("drawer = ! drawer"))
-                  btn("",icon="chevron_left", @click("current_id--"))
+                  btn("",icon="chevron_left", @click("if (current_id > 1) {current_id--}"))
                   btn("",icon="navigate_next", @click("current_id++"))
                   ])
           )
@@ -37,7 +44,7 @@ function ui(presentation)
 end
 
 function render_slide(id::Int, args...; kwargs...)
-    cell(class = "text-center flex-center", args..., @iif(:($id == current_id)); kwargs...)
+    Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
 end
 
 route("/") do
@@ -45,5 +52,5 @@ route("/") do
 end
 
 route("/:name") do
-    init_presentation(params(:name)) |> ui |> html
-  end
+    ui_out = init_presentation(params(:name)) |> ui |> html
+end
