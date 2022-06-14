@@ -1,5 +1,5 @@
 module Presentations
-using Stipple, StipplePlotly
+using Stipple, StipplePlotly, Mixers
 export init_presentation
 
 presentations = Dict{String, ReactiveModel}()
@@ -25,7 +25,14 @@ pd(name) = PlotData(
     name = name,
 )
 
-@reactive! mutable struct Presentation <: ReactiveModel
+#replaces @reactive! (search for "mutable struct reactive!" in Stipple.jl)
+@mix Stipple.@with_kw mutable struct presentation!
+    Stipple.@reactors #This line is from the definition of reactive!
+    current_id::R{Int8} = 1
+    drawer::R{Bool} = false
+end  
+
+@presentation! mutable struct Presentation <: ReactiveModel
     changename::R{Vector} = ["Increase"]
     changenames::R{Vector} = ["Increase", "Decrease", "Sine"]
     data::R{Vector{PlotData}} = [pd(name) for name in ["Team A", "Team B"]]
@@ -37,8 +44,6 @@ pd(name) = PlotData(
     )
     config::R{PlotConfig} = PlotConfig()
 
-    current_id::R{Int8} = 1
-    drawer::R{Bool} = false
     show_bar::R{Bool} = false
 end
 
