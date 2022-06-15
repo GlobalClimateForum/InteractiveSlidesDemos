@@ -3,12 +3,17 @@ using Stipple, StippleUI, StipplePlotly
 using Presentations
 
 function ui(presentation)
-  slides = include("slides.jl")
+  slides = include("slides.jl")::Vector
   page(presentation, style = "font-size:40px", prepend = style(
     """
     h1 {
         font-size: 3em !important;
         line-height: 1em !important;
+    }
+    .slide > p, li {
+        text-align: justify;
+        max-width: 60%;
+        margin: auto;
     }
     """
     ),
@@ -37,18 +42,22 @@ function ui(presentation)
               ])
           ])
           StippleUI.Layouts.page_container("",
-            [render_slide(id, slide) for (id,slide) in enumerate(slides)]
+            render_slides(slides)
           )
       ])
   ])
 end
 
-function render_slide(id::Int, args...; kwargs...)
-    Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", args..., @iif(:($id == current_id)); kwargs...)
+function render_slide(id::Int, slide)
+    Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", slide, @iif(:($id == current_id)))
+end
+
+function render_slides(slides::Vector)
+    [render_slide(id, slide) for (id,slide) in enumerate(slides)]
 end
 
 route("/") do
-  
+    ui_out = init_presentation("1") |> ui |> html
 end
 
 route("/:name") do
