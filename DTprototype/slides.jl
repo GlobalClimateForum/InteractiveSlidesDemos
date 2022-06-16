@@ -1,6 +1,6 @@
 [
-[
-    h1("Title slide"), p("The pandemic exposed an unspoken truth. 
+["""<h1>Title slide</h1>""", 
+    p("The pandemic exposed an unspoken truth. 
     People were not less productive working from home; 
     in fact, many got more work done. What gives? 
     Well, subtract an hour of commute each way. 
