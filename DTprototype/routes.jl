@@ -51,7 +51,7 @@ end
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
         list([
-            item(item_section(title), :clickable, @click("current_id = $(id)")) 
+            item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
             for 
             (id, title) in enumerate(slide_titles)
             ])
