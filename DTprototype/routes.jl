@@ -2,8 +2,10 @@ using Genie.Router, Genie.Renderer
 using Stipple, StippleUI, StipplePlotly
 using Presentations
 
+pname = "presentation1"
+
 function ui(presentation)
-  slides = include("slides.jl")::Vector{Vector{AbstractString}}
+  slides = include("public/$pname/slides.jl")::Vector{Vector{AbstractString}}
   slide_titles, slide_bodies = render_slides(slides)
   page(presentation, style = "font-size:40px", prepend = style(
     """
@@ -27,7 +29,7 @@ function ui(presentation)
                   ])
           )
           quasar(:footer, quasar(:toolbar, [space(),
-                  icon("img:img/GCFlogo.png", size = "md"),
+                  icon("img:$pname/img/GCFlogo.png", size = "md"),
                   quasar(:toolbar__title, "GCF"), span("", @text(:current_id))])
           )
           menu(slide_titles)
