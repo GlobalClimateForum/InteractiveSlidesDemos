@@ -22,13 +22,13 @@ function ui(presentation)
       StippleUI.Layouts.layout([
           quasar(:header, quasar(:toolbar, [
                   btn("",icon="menu", @click("drawer = ! drawer"))
-                  btn("",icon="chevron_left", @click("if (current_id > 1) {current_id--}"))
-                  btn("",icon="navigate_next", @click("if (current_id < $(length(slide_titles))) {current_id++}"))
+                  btn("",icon="chevron_left", @click("current_id > 1 ? current_id-- : null"))
+                  btn("",icon="navigate_next", @click("current_id < $(length(slide_titles)) ? current_id++ : null"))
                   ])
           )
           quasar(:footer, quasar(:toolbar, [space(),
                   icon("img:img/GCFlogo.png", size = "md"),
-                  quasar(:toolbar__title, "GCF")])
+                  quasar(:toolbar__title, "GCF"), span("", @text(:current_id))])
           )
           menu(slide_titles)
           StippleUI.Layouts.page_container("",

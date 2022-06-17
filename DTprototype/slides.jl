@@ -10,8 +10,8 @@
 ],
 [
     h1("Decision slide"),
-    row(class = "flex-center", quasar(:column,
-    select(:changename, options= :changenames)
+    row(class = "flex-center", cell(class = "col-2",
+    select(:changename, options= :changenames); size = 2
     )),
 ],
 [
