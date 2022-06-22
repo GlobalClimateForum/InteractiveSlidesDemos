@@ -3,10 +3,40 @@ using Stipple, StippleUI, StipplePlotly
 using Presentations
 
 pname = "presentation1"
+slides = Vector[]
+
+
+function slide(args...)
+    push!(slides, AbstractString[args...])
+end
+
+function render_slides(slides::Vector{Vector})
+titles = String[]
+bodies = ParsedHTMLString[]
+    for (id,sld) in enumerate(slides)
+        push!(titles, strip(match(r">.*<", String(sld[1])).match[2:end-1]))
+        push!(bodies, Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", sld, @iif(:($id == current_id))))
+    end
+    return (titles, bodies)
+end
+
+function menu(slide_titles::Vector{String})
+drawer(side="left", v__model="drawer", [
+        list([
+            item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
+            for 
+            (id, title) in enumerate(slide_titles)
+            ])
+        ])
+end
+
+
+slides = include("public/$pname/slides.jl")
+slide_titles, slide_bodies = render_slides(slides)
+
+
 
 function ui(presentation)
-  slides = include("public/$pname/slides.jl")::Vector{Vector{AbstractString}}
-  slide_titles, slide_bodies = render_slides(slides)
   page(presentation, style = "font-size:40px", prepend = style(
     """
     h1 {
@@ -38,26 +68,6 @@ function ui(presentation)
           )
       ])
   ])
-end
-
-function render_slides(slides::Vector{Vector{AbstractString}})
-titles = String[]
-bodies = ParsedHTMLString[]
-    for (id,slide) in enumerate(slides)
-        push!(titles, strip(match(r">.*<", String(slide[1])).match[2:end-1]))
-        push!(bodies, Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", slide, @iif(:($id == current_id))))
-    end
-    return (titles, bodies)
-end
-
-function menu(slide_titles::Vector{String})
-drawer(side="left", v__model="drawer", [
-        list([
-            item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
-            for 
-            (id, title) in enumerate(slide_titles)
-            ])
-        ])
 end
 
 route("/") do
