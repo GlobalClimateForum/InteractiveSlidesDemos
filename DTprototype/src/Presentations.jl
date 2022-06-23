@@ -33,8 +33,8 @@ pd(name) = PlotData(
 end  
 
 @presentation! mutable struct Presentation <: ReactiveModel
-    changename::R{Vector} = ["Increase"]
-    changenames::R{Vector} = ["Increase", "Decrease", "Sine"]
+    changename::R{Vector} = ["Nothing"]
+    changenames::R{Vector} = ["Nothing", "Increase", "Decrease", "Sine"]
     data::R{Vector{PlotData}} = [pd(name) for name in ["Team A", "Team B"]]
     data2::R{Vector{PlotData}} = deepcopy(data)
     layout::R{PlotLayout} = PlotLayout(
@@ -79,7 +79,7 @@ function change_data!(presentation)
             y += x./12
         elseif presentation.changename[1] == "Decrease"
             y -= x./12
-        else
+        elseif presentation.changename[1] == "Sine"
             y += sin.(x.*pi./6)
         end
         presentation.data2[i].y = y
@@ -91,7 +91,6 @@ end
 function add_handlers!(presentation)
     on(presentation.isready) do ready
         ready || return
-        change_data!(presentation) 
         push!(presentation)        
     end
     on(presentation.show_bar) do _
