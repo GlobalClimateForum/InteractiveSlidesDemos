@@ -1,14 +1,20 @@
-module DTTest
+module DT
 using Stipple, StipplePlotly, StippleUI, Slides
-export create_slideshow, DTname
+export create_slideshow, folder
 
-const DTname = @__MODULE__
+const folder = splitpath(@__DIR__)[end]
 
-function create_slideshow(folder)
+function create_slideshow()
 # standarddata = newfield(type = :data, dummy = false)
 # layout1 = :layout
 # config1 = :config
 show_bar = :show_bar
+
+# function add_handler(var1::Symbol, var2::Symbol; on = [vars], notify = [vars]) #perhaps only kwargs
+#     if var1
+#         var1 * var2
+# # "this function or macro takes these symbols and creates the respective handler"
+# end
 
 slide(
 """<h1>Title slide</h1>""", 
