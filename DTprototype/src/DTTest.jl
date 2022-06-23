@@ -1,6 +1,8 @@
-module Slideshow
+module DTTest
 using Stipple, StipplePlotly, StippleUI, Slides
-export create_slideshow
+export create_slideshow, DTname
+
+const DTname = @__MODULE__
 
 function create_slideshow(folder)
 # standarddata = newfield(type = :data, dummy = false)
@@ -31,13 +33,13 @@ slide(
     h2("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
-    plot(:data, layout = :layout, config = :config)]), 
+    plot(:data, layout = :layout, config = :config)]),
 cell([
     plot(:data2, layout = :layout, config = :config)])
 ]),
 row(class = "flex-center",
-    [radio("Scatter plot", :show_bar, val = 0),
-    radio("Bar plot", :show_bar, val = "true"),
+    [radio("Scatter plot", show_bar, val = 0),
+    radio("Bar plot", show_bar, val = "true"),
     ]),
 )
 

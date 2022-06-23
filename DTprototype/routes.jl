@@ -2,9 +2,7 @@ using Genie.Router, Genie.Renderer
 using Stipple, StippleUI, StipplePlotly, Slides
 using Presentations
 
-pname = "presentation1"
-include("public/$pname/slides.jl")
-using .Slideshow
+using DTTest
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
@@ -16,9 +14,8 @@ drawer(side="left", v__model="drawer", [
         ])
 end
 
-slide_titles, slide_bodies = create_slideshow(pname) |> render_slides
-
 function ui(presentation)
+  slide_titles, slide_bodies = create_slideshow(DTname) |> render_slides
   page(presentation, style = "font-size:40px", prepend = style(
     """
     h1 {
@@ -41,7 +38,7 @@ function ui(presentation)
                   ])
           )
           quasar(:footer, quasar(:toolbar, [space(),
-                  icon("img:$pname/img/GCFlogo.png", size = "md"),
+                  icon("img:$DTname/img/GCFlogo.png", size = "md"),
                   quasar(:toolbar__title, "GCF"), span("", @text(:current_id))])
           )
           menu(slide_titles)
