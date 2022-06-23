@@ -1,24 +1,10 @@
 using Genie.Router, Genie.Renderer
-using Stipple, StippleUI, StipplePlotly
+using Stipple, StippleUI, StipplePlotly, Slides
 using Presentations
 
 pname = "presentation1"
-slides = Vector[]
-
-
-function slide(args...)
-    push!(slides, AbstractString[args...])
-end
-
-function render_slides(slides::Vector{Vector})
-titles = String[]
-bodies = ParsedHTMLString[]
-    for (id,sld) in enumerate(slides)
-        push!(titles, strip(match(r">.*<", String(sld[1])).match[2:end-1]))
-        push!(bodies, Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", sld, @iif(:($id == current_id))))
-    end
-    return (titles, bodies)
-end
+include("public/$pname/slides.jl")
+using .Slideshow
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
@@ -30,11 +16,7 @@ drawer(side="left", v__model="drawer", [
         ])
 end
 
-
-slides = include("public/$pname/slides.jl")
-slide_titles, slide_bodies = render_slides(slides)
-
-
+slide_titles, slide_bodies = create_slideshow(pname) |> render_slides
 
 function ui(presentation)
   page(presentation, style = "font-size:40px", prepend = style(

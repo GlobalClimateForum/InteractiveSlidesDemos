@@ -1,3 +1,13 @@
+module Slideshow
+using Stipple, StipplePlotly, StippleUI, Slides
+export create_slideshow
+
+function create_slideshow(folder)
+# standarddata = newfield(type = :data, dummy = false)
+# layout1 = :layout
+# config1 = :config
+show_bar = :show_bar
+
 slide(
 """<h1>Title slide</h1>""", 
     p("The pandemic exposed an unspoken truth. 
@@ -11,7 +21,7 @@ slide(
 
 slide(
     h1("Decision slide"),
-    row(class = "flex-center", img(src="$pname/img/samplepic.jpg")),
+    row(class = "flex-center", img(src="$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
     select(:changename, options= :changenames); size = 2
     )),
@@ -30,3 +40,6 @@ row(class = "flex-center",
     radio("Bar plot", :show_bar, val = "true"),
     ]),
 )
+
+end
+end
