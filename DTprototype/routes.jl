@@ -14,8 +14,9 @@ drawer(side="left", v__model="drawer", [
         ])
 end
 
-function ui(pmodel)
-  slide_titles, slide_bodies = create_slideshow() |> render_slides
+function ui(pmodel, m_id)
+  println(folder)
+  slide_titles, slide_bodies = render_slides(create_slideshow(), m_id)
   page(pmodel, style = "font-size:40px", prepend = style(
     """
     h1 {
@@ -33,8 +34,8 @@ function ui(pmodel)
       StippleUI.Layouts.layout([
           quasar(:header, quasar(:toolbar, [
                   btn("",icon="menu", @click("drawer = ! drawer"))
-                  btn("",icon="chevron_left", @click("current_id > 1 ? current_id-- : null"))
-                  btn("",icon="navigate_next", @click("current_id < $(length(slide_titles)) ? current_id++ : null"))
+                  btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
+                  btn("",icon="navigate_next", @click("current_id$m_id < $(length(slide_titles)) ? current_id$m_id++ : null"))
                   ])
           )
           quasar(:footer, quasar(:toolbar, [space(),
@@ -50,9 +51,13 @@ function ui(pmodel)
 end
 
 route("/") do
-    ui_out = init_pmodel("1") |> ui |> html
+    ui_out = ui(init_pmodel("default"), 1) |> html
 end
 
-route("/:name") do
-    ui_out = init_pmodel(params(:name)) |> ui |> html
+route("/:monitor_id::Int/") do
+    ui_out = ui(init_pmodel("default"), params(:monitor_id)) |> html
+end
+
+route("/:name::String/:monitor_id::Int/") do
+    ui_out = ui(init_pmodel(params(:name)), params(:monitor_id)) |> html
 end

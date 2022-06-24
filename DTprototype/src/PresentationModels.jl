@@ -25,14 +25,12 @@ pd(name) = PlotData(
     name = name,
 )
 
-#replaces @reactive! (search for "mutable struct reactive!" in Stipple.jl)
-@mix Stipple.@with_kw mutable struct pmodel_mixin!
-    Stipple.@reactors #This line is from the definition of reactive!
-    current_id::R{Int8} = 1
+@reactive! mutable struct PresentationModel <: ReactiveModel
+    current_id1::R{Int8} = 1
+    current_id2::R{Int8} = 1
+    current_id3::R{Int8} = 1
+    current_id4::R{Int8} = 1
     drawer::R{Bool} = false
-end  
-
-@pmodel_mixin! mutable struct PresentationModel <: ReactiveModel
     changename::R{Vector} = ["Nothing"]
     changenames::R{Vector} = ["Nothing", "Increase", "Decrease", "Sine"]
     data::R{Vector{PlotData}} = [pd(name) for name in ["Team A", "Team B"]]
