@@ -1,6 +1,6 @@
 using Genie.Router, Genie.Renderer
 using Stipple, StippleUI, StipplePlotly, Slides
-using Presentations
+using PresentationModels
 
 using DT
 
@@ -14,9 +14,9 @@ drawer(side="left", v__model="drawer", [
         ])
 end
 
-function ui(presentation)
+function ui(pmodel)
   slide_titles, slide_bodies = create_slideshow() |> render_slides
-  page(presentation, style = "font-size:40px", prepend = style(
+  page(pmodel, style = "font-size:40px", prepend = style(
     """
     h1 {
         font-size: 3em !important;
@@ -50,9 +50,9 @@ function ui(presentation)
 end
 
 route("/") do
-    ui_out = init_presentation("1") |> ui |> html
+    ui_out = init_pmodel("1") |> ui |> html
 end
 
 route("/:name") do
-    ui_out = init_presentation(params(:name)) |> ui |> html
+    ui_out = init_pmodel(params(:name)) |> ui |> html
 end
