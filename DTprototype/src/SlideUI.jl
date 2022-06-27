@@ -1,4 +1,4 @@
-module Slides
+module SlideUI
 using Stipple, Genie.Renderer
 export slide, render_slides
 

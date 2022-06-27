@@ -1,6 +1,6 @@
 using Genie.Router, Genie.Renderer
-using Stipple, StippleUI, StipplePlotly, Slides
-using PresentationModels
+using Stipple, StippleUI, StipplePlotly
+using PresentationModels, SlideUI
 
 using DT
 

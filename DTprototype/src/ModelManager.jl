@@ -1,7 +1,7 @@
-module PresentationFields
+module ModelManager
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
-fieldcounters = Dict{Symbol, Int8}(:Bool => 1, :Int => 1, :Vector => 1; :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
+fieldcounters = Dict{Symbol, Int8}(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
 
 function newfield(; type = :Bool::Symbol, dummy = 0::Int)
     rng = MersenneTwister(dummy)
@@ -18,4 +18,6 @@ function newfield(; type = :Bool::Symbol, dummy = 0::Int)
         end
         return :data
     end
+end
+
 end

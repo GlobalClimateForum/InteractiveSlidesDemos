@@ -1,5 +1,6 @@
 module DT
-using Stipple, StipplePlotly, StippleUI, Slides
+using Stipple, StipplePlotly, StippleUI
+using SlideUI, ModelManager
 export create_slideshow, folder
 
 const folder = splitpath(@__DIR__)[end]
