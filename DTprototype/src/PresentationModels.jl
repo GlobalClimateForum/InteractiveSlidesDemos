@@ -26,6 +26,7 @@ pd(name) = PlotData(
 )
 
 @reactive! mutable struct PresentationModel <: ReactiveModel
+    bool1::R{Int} = 0
     current_id1::R{Int8} = 1
     current_id2::R{Int8} = 1
     current_id3::R{Int8} = 1
@@ -55,20 +56,6 @@ function init_pmodel(name)
     end
 end
 
-function switch_plots!(pmodel)
-    println(string("show bar = ", pmodel.show_bar[]))
-    if pmodel.show_bar[]
-        setproperty!.(pmodel.data[], :plot, "bar")
-        setproperty!.(pmodel.data2[], :plot, "bar")
-    else
-        setproperty!.(pmodel.data[], :plot, "scatter")
-        setproperty!.(pmodel.data2[], :plot, "scatter")
-    end
-    notify(pmodel.data)
-    notify(pmodel.data2)
-    return pmodel
-end
-
 function change_data!(pmodel)
     for i = 1:2
         y = pmodel.data[i].y
@@ -90,9 +77,6 @@ function add_handlers!(pmodel)
     on(pmodel.isready) do ready
         ready || return
         push!(pmodel)        
-    end
-    on(pmodel.show_bar) do _
-        switch_plots!(pmodel)     
     end
     on(pmodel.changename) do _
         change_data!(pmodel)     

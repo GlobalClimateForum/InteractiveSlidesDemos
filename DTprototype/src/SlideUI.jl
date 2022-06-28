@@ -16,8 +16,11 @@ function render_slides(slides_to_render::Vector{Vector}, monitor_id)
             Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", 
             sld, @iif("$id == current_id$monitor_id")))
         end
-    empty!(slides)
     return (titles, bodies)
+end
+
+function reset_slideUI()
+    empty!(slides)
 end
 
 end
