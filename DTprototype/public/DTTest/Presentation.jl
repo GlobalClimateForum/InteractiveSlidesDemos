@@ -1,4 +1,4 @@
-module DT
+module Presentation
 using Stipple, StipplePlotly, StippleUI
 using SlideUI, ModelManager
 export create_slideshow, folder

@@ -3,7 +3,7 @@ using Stipple, StippleUI, StipplePlotly
 import PresentationModels: get_pmodel
 import SlideUI, ModelManager
 
-using DT
+using Presentation
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
@@ -18,7 +18,7 @@ end
 function ui(pmodel, m_id)
     ModelManager.reset_manager()
     SlideUI.reset_slideUI()
-    slide_titles, slide_bodies = SlideUI.render_slides(DT.create_slideshow(pmodel), m_id)
+    slide_titles, slide_bodies = SlideUI.render_slides(create_slideshow(pmodel), m_id)
     page(pmodel, style = "font-size:40px", prepend = style(
         """
         h1 {
