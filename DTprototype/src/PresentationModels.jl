@@ -1,8 +1,8 @@
 module PresentationModels
 using Stipple, StipplePlotly, Mixers
-export init_pmodel
+export get_pmodel
 
-pmodels = Dict{String, ReactiveModel}()
+pmodels = ReactiveModel[]
 
 x = [
     "Jan2019",
@@ -47,13 +47,12 @@ pd(name) = PlotData(
 end
 
 
-function init_pmodel(name)
-    if !haskey(pmodels, name)
-        pmodel = Stipple.init(PresentationModel)
-        pmodels[name] = add_handlers!(pmodel)
-    else
-        pmodels[name]
+function get_pmodel()
+    if isempty(pmodels)
+        pmodel = Stipple.init(PresentationModel) |> add_handlers!
+        push!(pmodels, pmodel)
     end
+    pmodels[1]
 end
 
 function change_data!(pmodel)

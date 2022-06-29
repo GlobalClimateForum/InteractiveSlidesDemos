@@ -1,7 +1,7 @@
 using Genie.Router, Genie.Renderer
 using Stipple, StippleUI, StipplePlotly
-using PresentationModels, SlideUI
-import ModelManager
+import PresentationModels: get_pmodel
+import SlideUI, ModelManager
 
 using DT
 
@@ -18,7 +18,7 @@ end
 function ui(pmodel, m_id)
     ModelManager.reset_manager()
     SlideUI.reset_slideUI()
-    slide_titles, slide_bodies = render_slides(create_slideshow(pmodel), m_id)
+    slide_titles, slide_bodies = SlideUI.render_slides(DT.create_slideshow(pmodel), m_id)
     page(pmodel, style = "font-size:40px", prepend = style(
         """
         h1 {
@@ -53,13 +53,9 @@ function ui(pmodel, m_id)
 end
 
 route("/") do
-    ui_out = ui(init_pmodel("default"), 1) |> html
+    ui_out = ui(get_pmodel(), 1) |> html
 end
 
 route("/:monitor_id::Int/") do
-    ui_out = ui(init_pmodel("default"), params(:monitor_id)) |> html
-end
-
-route("/:name::String/:monitor_id::Int/") do
-    ui_out = ui(init_pmodel(params(:name)), params(:monitor_id)) |> html
+    ui_out = ui(get_pmodel(), params(:monitor_id)) |> html
 end
