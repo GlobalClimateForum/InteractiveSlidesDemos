@@ -1,5 +1,4 @@
-using Genie.Router, Genie.Renderer
-using Stipple, StippleUI, StipplePlotly
+using Stipple, StippleUI
 import PresentationModels: get_pmodel
 import SlideUI, ModelManager
 
@@ -52,10 +51,10 @@ function ui(pmodel, m_id)
     ])
 end
 
-route("/") do
+Genie.Router.route("/") do
     ui_out = ui(get_pmodel(), 1) |> html
 end
 
-route("/:monitor_id::Int/") do
+Genie.Router.route("/:monitor_id::Int/") do
     ui_out = ui(get_pmodel(), params(:monitor_id)) |> html
 end
