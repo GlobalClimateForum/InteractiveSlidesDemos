@@ -1,8 +1,12 @@
 module PresentationModels
-using Stipple, StipplePlotly
+println("Time to import Stipple and StipplePlotly in PresentationModels:")
+@time using Stipple, StipplePlotly
+import Stipple.table
 export get_pmodel
 
 pmodels = ReactiveModel[]
+
+register_mixin(@__MODULE__)
 
 @reactive! mutable struct PresentationModel <: ReactiveModel
     int1::R{Int} = 0

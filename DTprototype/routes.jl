@@ -1,8 +1,9 @@
-using Stipple, StippleUI
-import PresentationModels: get_pmodel
-import SlideUI, ModelManager
-
-using Presentation
+println("Time to import Stipple and StippleUI:")
+@time using Stipple, StippleUI, StipplePlotly
+println("Time to import framework modules:")
+@time import PresentationModels.get_pmodel, SlideUI, ModelManager
+println("Time to import presentation:")
+@time using Presentation
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
@@ -41,7 +42,7 @@ function ui(pmodel, m_id)
             )
             quasar(:footer, quasar(:toolbar, [space(),
                     icon("img:$folder/img/GCFlogo.png", size = "md"),
-                    quasar(:toolbar__title, "GCF"), span("", @text(:current_id))])
+                    quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
             )
             menu(slide_titles)
             StippleUI.Layouts.page_container("",
@@ -51,8 +52,11 @@ function ui(pmodel, m_id)
     ])
 end
 
-Genie.Router.route("/") do
-    ui_out = ui(get_pmodel(), 1) |> html
+route("/") do
+    println("Time to get model:")
+    @time pmodel = get_pmodel()
+    println("Time to build UI:")
+    @time ui_out = ui(pmodel, 1) |> html
 end
 
 Genie.Router.route("/:monitor_id::Int/") do
