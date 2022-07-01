@@ -5,14 +5,14 @@ import Random
 
 #SLIDE UI
 #region
-export slide, render_slides
+export slide, render_slides, standard_menu, standard_header, standard_footer
 
 slides = Vector[]
 function slide(args...)
     push!(slides, AbstractString[args...])
 end
 
-function render_slides(slides_to_render::Vector{Vector}, monitor_id)
+function render_slides(slides_to_render::Vector{Vector}, monitor_id::Int)
     titles = String[]
     bodies = ParsedHTMLString[]
         for (id,sld) in enumerate(slides_to_render)
@@ -27,6 +27,70 @@ end
 function reset_slideUI()
     empty!(slides)
 end
+
+function standard_menu(slide_titles::Vector{String})
+    drawer(side="left", v__model="drawer", [
+            list([
+                item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
+                for 
+                (id, title) in enumerate(slide_titles)
+                ])
+            ])
+end
+
+function standard_header(num_slides::Int, m_id::Int)
+    quasar(:header, quasar(:toolbar, [
+        btn("",icon="menu", @click("drawer = ! drawer"))
+        btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
+        btn("",icon="navigate_next", @click("current_id$m_id < $num_slides ? current_id$m_id++ : null"))
+        ])
+    )
+end
+
+function standard_footer(m_id::Int, folder::AbstractString)
+    quasar(:footer, quasar(:toolbar, [space(),
+            icon("img:$folder/img/GCFlogo.png", size = "md"),
+            quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
+    )
+end
+#endregion
+
+#PresentationModels
+#region
+export get_pmodel, PresentationModel
+
+register_mixin(@__MODULE__)
+
+@reactive! mutable struct PresentationModel <: ReactiveModel
+    int1::R{Int} = 0
+    current_id1::R{Int8} = 1
+    current_id2::R{Int8} = 1
+    current_id3::R{Int8} = 1
+    current_id4::R{Int8} = 1
+    drawer::R{Bool} = false
+    vector1::R{Vector} = []
+    vector2::R{Vector} = []
+    plotdata1::R{Vector{PlotData}} = [PlotData()]
+    plotdata2::R{Vector{PlotData}} = [PlotData()]
+    layout::R{PlotLayout} = PlotLayout()
+    config::R{PlotConfig} = PlotConfig()
+
+    show_bar::R{Bool} = false
+end
+
+pmodels = PresentationModel[]
+
+function get_pmodel()
+    if isempty(pmodels)
+        pmodel = Stipple.init(PresentationModel)
+        on(pmodel.isready) do ready
+            ready || return
+            push!(pmodel)        
+        end
+        push!(pmodels, pmodel)
+    end
+    pmodels[1]
+end
 #endregion
 
 #ModelManager
@@ -38,7 +102,7 @@ counters = Dict{Symbol, Int8}(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 
 
 handlers = Observables.ObserverFunction[]
 
-function new_field!(pmodel, type::Symbol; value = Nothing, dummy = 0::Int)
+function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
     rng = Random.MersenneTwister(dummy)
     name = lowercase(string(type, counters[type]))
     if name[1:4] == "bool"
@@ -74,7 +138,7 @@ function reset_manager()
     off.(handlers)
 end
 
-function on_bool!(pmodel)
+function on_bool!(pmodel::PresentationModel)
     handler = on(pmodel.int1) do val
         println(string("show bar = ", pmodel.int1[]))
         if val == 1
@@ -91,7 +155,7 @@ function on_bool!(pmodel)
     notify(pmodel.int1)
 end
 
-function on_vector!(pmodel)
+function on_vector!(pmodel::PresentationModel)
     handler = on(pmodel.vector1) do choice
         for i = 1:2
             y = pmodel.plotdata1[i].y
@@ -109,49 +173,6 @@ function on_vector!(pmodel)
     end
     push!(handlers, handler)
     notify(pmodel.vector1)
-end
-#endregion
-
-#PresentationModels
-#region
-export get_pmodel
-
-pmodels = ReactiveModel[]
-
-register_mixin(@__MODULE__)
-
-@reactive! mutable struct PresentationModel <: ReactiveModel
-    int1::R{Int} = 0
-    current_id1::R{Int8} = 1
-    current_id2::R{Int8} = 1
-    current_id3::R{Int8} = 1
-    current_id4::R{Int8} = 1
-    drawer::R{Bool} = false
-    vector1::R{Vector} = []
-    vector2::R{Vector} = []
-    plotdata1::R{Vector{PlotData}} = [PlotData()]
-    plotdata2::R{Vector{PlotData}} = [PlotData()]
-    layout::R{PlotLayout} = PlotLayout()
-    config::R{PlotConfig} = PlotConfig()
-
-    show_bar::R{Bool} = false
-end
-
-
-function get_pmodel()
-    if isempty(pmodels)
-        pmodel = Stipple.init(PresentationModel) |> add_handlers!
-        push!(pmodels, pmodel)
-    end
-    pmodels[1]
-end
-
-function add_handlers!(pmodel)
-    on(pmodel.isready) do ready
-        ready || return
-        push!(pmodel)        
-    end
-    pmodel
 end
 #endregion
 

@@ -1,17 +1,7 @@
 println("Time to import Presentation:")
 @time using Presentation
 
-function menu(slide_titles::Vector{String})
-drawer(side="left", v__model="drawer", [
-        list([
-            item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
-            for 
-            (id, title) in enumerate(slide_titles)
-            ])
-        ])
-end
-
-function ui(pmodel, m_id)
+function ui(pmodel::PresentationModel, m_id::Int)
     reset_manager()
     SlideUI.reset_slideUI()
     slide_titles, slide_bodies = SlideUI.render_slides(create_slideshow(pmodel), m_id)
@@ -30,17 +20,9 @@ function ui(pmodel, m_id)
         ),
     [
         StippleUI.Layouts.layout([
-            quasar(:header, quasar(:toolbar, [
-                    btn("",icon="menu", @click("drawer = ! drawer"))
-                    btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
-                    btn("",icon="navigate_next", @click("current_id$m_id < $(length(slide_titles)) ? current_id$m_id++ : null"))
-                    ])
-            )
-            quasar(:footer, quasar(:toolbar, [space(),
-                    icon("img:$folder/img/GCFlogo.png", size = "md"),
-                    quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
-            )
-            menu(slide_titles)
+            standard_menu(slide_titles)
+            standard_header(length(slide_titles), m_id)
+            standard_footer(m_id, folder)
             StippleUI.Layouts.page_container("",
                 slide_bodies
             )
