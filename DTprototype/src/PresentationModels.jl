@@ -1,7 +1,5 @@
 module PresentationModels
-println("Time to import Stipple and StipplePlotly in PresentationModels:")
-@time using Stipple, StipplePlotly
-import Stipple.table
+using ..Stipple, ..StipplePlotly
 export get_pmodel
 
 pmodels = ReactiveModel[]

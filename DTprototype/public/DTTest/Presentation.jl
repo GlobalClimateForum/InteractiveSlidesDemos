@@ -1,7 +1,6 @@
 module Presentation
-println("Time to import Stipple, StippleUI and StipplePlotly in Presentation:")
-@time using Stipple, StipplePlotly, StippleUI
-using SlideUI, ModelManager
+using ..Stipple, ..StipplePlotly, ..StippleUI
+using ..SlideUI, ..ModelManager
 export create_slideshow, folder
 
 const folder = splitpath(@__DIR__)[end]

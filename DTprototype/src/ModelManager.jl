@@ -1,6 +1,5 @@
 module ModelManager
-println("Time to import Stipple and StipplePlotly in ModelManager:")
-@time using Stipple, StipplePlotly
+using ..Stipple, ..StipplePlotly
 import Random
 export new_field!, on_bool!, on_vector!, reset_counter
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends

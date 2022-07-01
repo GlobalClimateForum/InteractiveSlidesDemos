@@ -1,9 +1,14 @@
-println("Time to import Stipple and StippleUI:")
-@time using Stipple, StippleUI, StipplePlotly
-println("Time to import framework modules:")
-@time import PresentationModels.get_pmodel, SlideUI, ModelManager
-println("Time to import presentation:")
-@time using Presentation
+using Stipple, StippleUI, StipplePlotly
+println("Time to import PresentationModels:")
+@time include("src/PresentationModels.jl")
+using ..PresentationModels
+println("Time to import ModelManager:")
+@time include("src/ModelManager.jl")
+println("Time to import SlideUI:")
+@time include("src/SlideUI.jl")
+println("Time to import Presentation:")
+@time include("$(LOAD_PATH[4])/Presentation.jl")
+using ..Presentation
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
