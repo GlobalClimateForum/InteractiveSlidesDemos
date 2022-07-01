@@ -1,6 +1,6 @@
 module Presentation
-using ..Stipple, ..StipplePlotly, ..StippleUI
-using ..SlideUI, ..ModelManager
+using Reexport
+@reexport using SlideUI
 export create_slideshow, folder
 
 const folder = splitpath(@__DIR__)[end]

@@ -1,14 +1,5 @@
-using Stipple, StippleUI, StipplePlotly
-println("Time to import PresentationModels:")
-@time include("src/PresentationModels.jl")
-using ..PresentationModels
-println("Time to import ModelManager:")
-@time include("src/ModelManager.jl")
-println("Time to import SlideUI:")
-@time include("src/SlideUI.jl")
 println("Time to import Presentation:")
-@time include("$(LOAD_PATH[4])/Presentation.jl")
-using ..Presentation
+@time using Presentation
 
 function menu(slide_titles::Vector{String})
 drawer(side="left", v__model="drawer", [
@@ -21,7 +12,7 @@ drawer(side="left", v__model="drawer", [
 end
 
 function ui(pmodel, m_id)
-    ModelManager.reset_manager()
+    reset_manager()
     SlideUI.reset_slideUI()
     slide_titles, slide_bodies = SlideUI.render_slides(create_slideshow(pmodel), m_id)
     page(pmodel, style = "font-size:40px", prepend = style(
