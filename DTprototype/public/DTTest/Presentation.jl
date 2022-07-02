@@ -14,8 +14,39 @@ plotlayout = new_field!(pmodel, :PlotLayout)
 choice = new_field!(pmodel, :Vector, value = ["Nothing"])
 possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
 
-on_bool!(pmodel)
-on_vector!(pmodel)
+handler = on(show_bar.ref) do val
+    println(string("show bar = ", show_bar.ref[]))
+    if val == 1
+        setproperty!.(team1data.ref[], :plot, "bar")
+        setproperty!.(team2data.ref[], :plot, "bar")
+    else
+        setproperty!.(team1data.ref[], :plot, "scatter")
+        setproperty!.(team2data.ref[], :plot, "scatter")
+    end
+    notify(team1data.ref)
+    notify(team2data.ref)   
+end
+push!(pmodel.handlers, handler)
+notify(show_bar.ref)
+
+handler = on(choice.ref) do choice
+    for i = 1:2
+        y = team1data.ref[i].y
+        x = 1:12
+        if choice == ["Increase"]
+            y += x./12
+        elseif choice == ["Decrease"]
+            y -= x./12
+        elseif choice == ["Sine"]
+            y += sin.(x.*pi./6)
+        end
+        team2data.ref[i].y = y
+    end
+    notify(team2data.ref)
+end
+push!(pmodel.handlers, handler)
+notify(choice.ref)
+
 # @new_handler!(possible_choices)
 # layout1 = :layout
 # config1 = :config
@@ -41,7 +72,7 @@ slide(
     h1("Decision slide"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
-    select(choice, options = possible_choices); size = 2
+    select(choice.sym, options = possible_choices.sym); size = 2
     )),
 )
 
@@ -49,13 +80,13 @@ slide(
     h2("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
-    plot(team1data, layout = plotlayout, config = plotconfig)]),
+    plot(team1data.sym, layout = plotlayout.sym, config = plotconfig.sym)]),
 cell([
-    plot(team2data, layout = plotlayout, config = plotconfig)])
+    plot(team2data.sym, layout = plotlayout.sym, config = plotconfig.sym)])
 ]),
 row(class = "flex-center",
-    [radio("Scatter plot", show_bar, val = 0),
-    radio("Bar plot", show_bar, val = 1),
+    [radio("Scatter plot", show_bar.sym, val = 0),
+    radio("Bar plot", show_bar.sym, val = 1),
     ]),
 )
 

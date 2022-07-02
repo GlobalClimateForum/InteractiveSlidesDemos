@@ -97,8 +97,13 @@ end
 
 #ModelManager
 #region
-export new_field!, on_bool!, on_vector!, reset_manager
+export new_field!, reset_manager
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
+
+mutable struct managed_field
+    sym::Symbol
+    ref
+end
 
 function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
     rng = Random.MersenneTwister(dummy)
@@ -128,7 +133,7 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
         getfield(pmodel, name_sym).o.val = value
     end
     pmodel.counters[type] += 1
-    return name_sym
+    return managed_field(name_sym, getfield(pmodel, name_sym))
 end
 
 function reset_manager(pmodel::PresentationModel)
@@ -138,42 +143,6 @@ function reset_manager(pmodel::PresentationModel)
     off.(pmodel.handlers)
 end
 
-function on_bool!(pmodel::PresentationModel)
-    handler = on(pmodel.int1) do val
-        println(string("show bar = ", pmodel.int1[]))
-        if val == 1
-            setproperty!.(pmodel.plotdata1[], :plot, "bar")
-            setproperty!.(pmodel.plotdata2[], :plot, "bar")
-        else
-            setproperty!.(pmodel.plotdata1[], :plot, "scatter")
-            setproperty!.(pmodel.plotdata2[], :plot, "scatter")
-        end
-        notify(pmodel.plotdata1)
-        notify(pmodel.plotdata2)   
-    end
-    push!(pmodel.handlers, handler)
-    notify(pmodel.int1)
-end
-
-function on_vector!(pmodel::PresentationModel)
-    handler = on(pmodel.vector1) do choice
-        for i = 1:2
-            y = pmodel.plotdata1[i].y
-            x = 1:12
-            if choice == ["Increase"]
-                y += x./12
-            elseif choice == ["Decrease"]
-                y -= x./12
-            elseif choice == ["Sine"]
-                y += sin.(x.*pi./6)
-            end
-            pmodel.plotdata2[i].y = y
-        end
-        notify(pmodel.plotdata2)
-    end
-    push!(pmodel.handlers, handler)
-    notify(pmodel.vector1)
-end
 #endregion
 
 end
