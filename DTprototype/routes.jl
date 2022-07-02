@@ -2,7 +2,7 @@ println("Time to import Presentation:")
 @time using Presentation
 
 function ui(pmodel::PresentationModel, m_id::Int)
-    reset_manager()
+    reset_manager(pmodel)
     SlideUI.reset_slideUI()
     slide_titles, slide_bodies = SlideUI.render_slides(create_slideshow(pmodel), m_id)
     page(pmodel, style = "font-size:40px", prepend = style(

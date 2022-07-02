@@ -72,10 +72,12 @@ register_mixin(@__MODULE__)
     vector2::R{Vector} = []
     plotdata1::R{Vector{PlotData}} = [PlotData()]
     plotdata2::R{Vector{PlotData}} = [PlotData()]
-    layout::R{PlotLayout} = PlotLayout()
-    config::R{PlotConfig} = PlotConfig()
+    plotlayout1::R{PlotLayout} = PlotLayout()
+    plotconfig1::R{PlotConfig} = PlotConfig()
 
     show_bar::R{Bool} = false
+    handlers::Vector{Observables.ObserverFunction} = []
+    counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
 end
 
 pmodels = PresentationModel[]
@@ -95,16 +97,12 @@ end
 
 #ModelManager
 #region
-export new_field!, on_bool!, on_vector!, reset_counter, reset_manager
+export new_field!, on_bool!, on_vector!, reset_manager
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
-
-counters = Dict{Symbol, Int8}(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
-
-handlers = Observables.ObserverFunction[]
 
 function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
     rng = Random.MersenneTwister(dummy)
-    name = lowercase(string(type, counters[type]))
+    name = lowercase(string(type, pmodel.counters[type]))
     if name[1:4] == "bool"
         name = "int" * name[5:end]
     end
@@ -126,16 +124,18 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
             value = rand(rng, [0 1])
         end
     end
-    getfield(pmodel, name_sym).o.val = value
-    counters[type] += 1
+    if value != Nothing
+        getfield(pmodel, name_sym).o.val = value
+    end
+    pmodel.counters[type] += 1
     return name_sym
 end
 
-function reset_manager()
-    for key in keys(counters)
-        counters[key] = 1
+function reset_manager(pmodel::PresentationModel)
+    for key in keys(pmodel.counters)
+        pmodel.counters[key] = 1
     end
-    off.(handlers)
+    off.(pmodel.handlers)
 end
 
 function on_bool!(pmodel::PresentationModel)
@@ -151,7 +151,7 @@ function on_bool!(pmodel::PresentationModel)
         notify(pmodel.plotdata1)
         notify(pmodel.plotdata2)   
     end
-    push!(handlers, handler)
+    push!(pmodel.handlers, handler)
     notify(pmodel.int1)
 end
 
@@ -171,7 +171,7 @@ function on_vector!(pmodel::PresentationModel)
         end
         notify(pmodel.plotdata2)
     end
-    push!(handlers, handler)
+    push!(pmodel.handlers, handler)
     notify(pmodel.vector1)
 end
 #endregion

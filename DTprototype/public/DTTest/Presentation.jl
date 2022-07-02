@@ -9,11 +9,14 @@ function create_slideshow(pmodel)
 show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)
 team1data = new_field!(pmodel, :PlotData, dummy = 1)
 team2data = new_field!(pmodel, :PlotData, dummy = 1)
+plotconfig = new_field!(pmodel, :PlotConfig)
+plotlayout = new_field!(pmodel, :PlotLayout)
 choice = new_field!(pmodel, :Vector, value = ["Nothing"])
 possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
 
 on_bool!(pmodel)
 on_vector!(pmodel)
+# @new_handler!(possible_choices)
 # layout1 = :layout
 # config1 = :config
 
@@ -46,9 +49,9 @@ slide(
     h2("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
-    plot(team1data, layout = :layout, config = :config)]),
+    plot(team1data, layout = plotlayout, config = plotconfig)]),
 cell([
-    plot(team2data, layout = :layout, config = :config)])
+    plot(team2data, layout = plotlayout, config = plotconfig)])
 ]),
 row(class = "flex-center",
     [radio("Scatter plot", show_bar, val = 0),
