@@ -1,8 +1,10 @@
 println("Time to import Presentation:")
 @time using Presentation
 
-function ui(pmodel::PresentationModel, m_id::Int)
-    reset_manager(pmodel)
+UI = ParsedHTMLString("")
+
+function ui(pmodel::PresentationModel, request_params::Dict{Symbol, Any})
+    m_id = get(request_params, :monitor_id, 1)::Int
     SlideUI.reset_slideUI()
     slide_titles, slide_bodies = SlideUI.render_slides(create_slideshow(pmodel), m_id)
     page(pmodel, style = "font-size:40px", prepend = style(
@@ -31,15 +33,12 @@ function ui(pmodel::PresentationModel, m_id::Int)
 end
 
 route("/") do
-    if get(params(), :recreate, "0") == "0"
-        pmodel = get_or_create_pmodel()
-    else
-        pmodel = create_or_recreate_pmodel()
-    end
+    pmodel = get_or_create_pmodel(params())
     println("Time to build UI:")
-    @time ui_out = ui(pmodel, m_id) |> html
+    @time ui_out = ui(pmodel, params()) |> html
 end
 
-Genie.Router.route("/:monitor_id::Int/") do
-    ui_out = ui(get_pmodel(), params(:monitor_id)) |> html
+route("/:monitor_id::Int/") do
+    pmodel = get_or_create_pmodel(params())
+    ui_out = ui(get_pmodel(), params()) |> html
 end

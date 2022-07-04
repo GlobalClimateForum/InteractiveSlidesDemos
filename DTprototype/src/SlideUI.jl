@@ -57,8 +57,7 @@ end
 
 #PresentationModels
 #region
-export get_or_create_pmodel, create_or_recreate_pmodel, PresentationModel
-
+export get_or_create_pmodel, PresentationModel
 register_mixin(@__MODULE__)
 
 @reactive! mutable struct PresentationModel <: ReactiveModel
@@ -76,13 +75,15 @@ register_mixin(@__MODULE__)
     plotconfig1::R{PlotConfig} = PlotConfig()
 
     show_bar::R{Bool} = false
-    handlers::Vector{Observables.ObserverFunction} = []
     counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
 end
 
 pmodels = PresentationModel[]
 
-function get_or_create_pmodel()
+function get_or_create_pmodel(request_params::Dict{Symbol, Any})
+    if !(get(request_params, :refresh, "0") == "0")
+        empty!(pmodels)
+    end
     if isempty(pmodels)
         pmodel = create_pmodel()
         push!(pmodels, pmodel)
@@ -90,26 +91,17 @@ function get_or_create_pmodel()
     pmodels[1]
 end
 
-function create_or_recreate_pmodel()
-    pmodel = create_pmodel()
-    if !isempty(pmodels)
-        empty!(pmodels)
-    end
-    push!(pmodels, pmodel)
-    pmodel
-end
-
 function create_pmodel()
-    js_mounted(::PresentationModel) = ""
-    # js_mounted(::PresentationModel) = """
-    # this._keyListener = function(e) {
-    #     if (e.key === "s" {
-    #         current_id1++;
-    #     }
-    # };
+    # js_mounted(::PresentationModel) = ""
+    js_mounted(::PresentationModel) = """
+    this._keyListener = function(e) {
+        if (e.key === "s" {
+            current_id1++;
+        }
+    };
 
-    # document.addEventListener('keydown', this._keyListener.bind(this));
-    # """
+    document.addEventListener('keydown', this._keyListener.bind(this));
+    """
     println("Time to initialize model:")
     @time pmodel = Stipple.init(PresentationModel)
     on(pmodel.isready) do ready
@@ -123,7 +115,7 @@ end
 
 #ModelManager
 #region
-export new_field!, reset_manager
+export new_field!
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct managed_field
@@ -160,14 +152,6 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
     end
     pmodel.counters[type] += 1
     return managed_field(name_sym, getfield(pmodel, name_sym))
-end
-
-function reset_manager(pmodel::PresentationModel)
-    for key in keys(pmodel.counters)
-        pmodel.counters[key] = 1
-    end
-    off.(pmodel.handlers)
-    pmodel.handlers = []
 end
 
 #endregion
