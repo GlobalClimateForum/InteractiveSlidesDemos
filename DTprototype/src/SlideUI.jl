@@ -3,54 +3,6 @@ using Reexport
 @reexport using Stipple, StipplePlotly, StippleUI
 import Random
 
-#SLIDE UI
-#region
-export ui, slide, standard_menu, standard_header, standard_footer
-
-slides = Vector[]
-function slide(args...)
-    push!(slides, AbstractString[args...])
-end
-
-function render_slides(slides_to_render::Vector{Vector}, monitor_id::Int)
-    titles = String[]
-    bodies = ParsedHTMLString[]
-        for (id,sld) in enumerate(slides_to_render)
-            push!(titles, strip(match(r">.*<", String(sld[1])).match[2:end-1]))
-            push!(bodies, 
-            Genie.Renderer.Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", 
-            sld, @iif("$id == current_id$monitor_id")))
-        end
-    return (titles, bodies)
-end
-
-function standard_menu(slide_titles::Vector{String})
-    drawer(side="left", v__model="drawer", [
-            list([
-                item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
-                for 
-                (id, title) in enumerate(slide_titles)
-                ])
-            ])
-end
-
-function standard_header(num_slides::Int, m_id::Int)
-    quasar(:header, quasar(:toolbar, [
-        btn("",icon="menu", @click("drawer = ! drawer"))
-        btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
-        btn("",icon="navigate_next", @click("current_id$m_id < $num_slides ? current_id$m_id++ : null"))
-        ])
-    )
-end
-
-function standard_footer(m_id::Int, folder::AbstractString)
-    quasar(:footer, quasar(:toolbar, [space(),
-            icon("img:$folder/img/GCFlogo.png", size = "md"),
-            quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
-    )
-end
-#endregion
-
 #PresentationModels
 #region
 export get_or_create_pmodel, PresentationModel, reset_counters
@@ -165,6 +117,53 @@ end
 
 #endregion
 
+#SLIDE UI
+#region
+export ui, slide, standard_menu, standard_header, standard_footer
+
+slides = Vector[]
+function slide(args...)
+    push!(slides, AbstractString[args...])
+end
+
+function render_slides(slides_to_render::Vector{Vector}, monitor_id::Int)
+    titles = String[]
+    bodies = ParsedHTMLString[]
+        for (id,sld) in enumerate(slides_to_render)
+            push!(titles, strip(match(r">.*<", String(sld[1])).match[2:end-1]))
+            push!(bodies, 
+            Genie.Renderer.Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", 
+            sld, @iif("$id == current_id$monitor_id")))
+        end
+    return (titles, bodies)
+end
+
+function standard_menu(slide_titles::Vector{String})
+    drawer(side="left", v__model="drawer", [
+            list([
+                item(item_section(string(id) * ": " * title), :clickable, @click("current_id = $(id)")) 
+                for 
+                (id, title) in enumerate(slide_titles)
+                ])
+            ])
+end
+
+function standard_header(num_slides::Int, m_id::Int)
+    quasar(:header, quasar(:toolbar, [
+        btn("",icon="menu", @click("drawer = ! drawer"))
+        btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
+        btn("",icon="navigate_next", @click("current_id$m_id < $num_slides ? current_id$m_id++ : null"))
+        ])
+    )
+end
+
+function standard_footer(m_id::Int, folder::AbstractString)
+    quasar(:footer, quasar(:toolbar, [space(),
+            icon("img:$folder/img/GCFlogo.png", size = "md"),
+            quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
+    )
+end
+
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
     m_id = get(request_params, :monitor_id, 1)::Int
     if isempty(slides) || get(request_params, :refresh, "0") != "0"
@@ -196,5 +195,5 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
         ])
     ])
 end
-
+#endregion
 end
