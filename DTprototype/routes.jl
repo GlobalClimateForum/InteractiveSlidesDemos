@@ -31,10 +31,13 @@ function ui(pmodel::PresentationModel, m_id::Int)
 end
 
 route("/") do
-    println("Time to get model:")
-    @time pmodel = get_pmodel()
+    if get(params(), :recreate, "0") == "0"
+        pmodel = get_or_create_pmodel()
+    else
+        pmodel = create_or_recreate_pmodel()
+    end
     println("Time to build UI:")
-    @time ui_out = ui(pmodel, 1) |> html
+    @time ui_out = ui(pmodel, m_id) |> html
 end
 
 Genie.Router.route("/:monitor_id::Int/") do

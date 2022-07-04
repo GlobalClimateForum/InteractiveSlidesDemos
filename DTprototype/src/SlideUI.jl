@@ -57,7 +57,7 @@ end
 
 #PresentationModels
 #region
-export get_pmodel, PresentationModel
+export get_or_create_pmodel, create_or_recreate_pmodel, PresentationModel
 
 register_mixin(@__MODULE__)
 
@@ -82,16 +82,42 @@ end
 
 pmodels = PresentationModel[]
 
-function get_pmodel()
+function get_or_create_pmodel()
     if isempty(pmodels)
-        pmodel = Stipple.init(PresentationModel)
-        on(pmodel.isready) do ready
-            ready || return
-            push!(pmodel)        
-        end
+        pmodel = create_pmodel()
         push!(pmodels, pmodel)
     end
     pmodels[1]
+end
+
+function create_or_recreate_pmodel()
+    pmodel = create_pmodel()
+    if !isempty(pmodels)
+        empty!(pmodels)
+    end
+    push!(pmodels, pmodel)
+    pmodel
+end
+
+function create_pmodel()
+    js_mounted(::PresentationModel) = ""
+    # js_mounted(::PresentationModel) = """
+    # this._keyListener = function(e) {
+    #     if (e.key === "s" {
+    #         current_id1++;
+    #     }
+    # };
+
+    # document.addEventListener('keydown', this._keyListener.bind(this));
+    # """
+    println("Time to initialize model:")
+    @time pmodel = Stipple.init(PresentationModel)
+    on(pmodel.isready) do ready
+        ready || return
+        push!(pmodel)        
+    end
+
+    return pmodel
 end
 #endregion
 
@@ -141,6 +167,7 @@ function reset_manager(pmodel::PresentationModel)
         pmodel.counters[key] = 1
     end
     off.(pmodel.handlers)
+    pmodel.handlers = []
 end
 
 #endregion

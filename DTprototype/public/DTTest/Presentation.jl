@@ -14,6 +14,8 @@ plotlayout = new_field!(pmodel, :PlotLayout)
 choice = new_field!(pmodel, :Vector, value = ["Nothing"])
 possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
 
+#Handlers
+#region
 handler = on(show_bar.ref) do val
     println(string("show bar = ", show_bar.ref[]))
     if val == 1
@@ -26,7 +28,6 @@ handler = on(show_bar.ref) do val
     notify(team1data.ref)
     notify(team2data.ref)   
 end
-push!(pmodel.handlers, handler)
 notify(show_bar.ref)
 
 handler = on(choice.ref) do choice
@@ -44,7 +45,6 @@ handler = on(choice.ref) do choice
     end
     notify(team2data.ref)
 end
-push!(pmodel.handlers, handler)
 notify(choice.ref)
 
 # @new_handler!(possible_choices)
@@ -56,6 +56,8 @@ notify(choice.ref)
 #         var1 * var2
 # # "this function or macro takes these symbols and creates the respective handler"
 # end
+
+#endregion
 
 slide(
 """<h1>Title slide</h1>""", 
