@@ -5,7 +5,7 @@ import Random
 
 #SLIDE UI
 #region
-export slide, render_slides, standard_menu, standard_header, standard_footer
+export ui, slide, standard_menu, standard_header, standard_footer
 
 slides = Vector[]
 function slide(args...)
@@ -22,10 +22,6 @@ function render_slides(slides_to_render::Vector{Vector}, monitor_id::Int)
             sld, @iif("$id == current_id$monitor_id")))
         end
     return (titles, bodies)
-end
-
-function reset_slideUI()
-    empty!(slides)
 end
 
 function standard_menu(slide_titles::Vector{String})
@@ -57,7 +53,7 @@ end
 
 #PresentationModels
 #region
-export get_or_create_pmodel, PresentationModel
+export get_or_create_pmodel, PresentationModel, reset_counters
 register_mixin(@__MODULE__)
 
 @reactive! mutable struct PresentationModel <: ReactiveModel
@@ -80,10 +76,13 @@ end
 
 pmodels = PresentationModel[]
 
-function get_or_create_pmodel(request_params::Dict{Symbol, Any})
-    if !(get(request_params, :refresh, "0") == "0")
-        empty!(pmodels)
+function reset_counters(pmodel::PresentationModel)
+    for key in keys(pmodel.counters)
+        pmodel.counters[key] = 1
     end
+end
+
+function get_or_create_pmodel(request_params::Dict{Symbol, Any})
     if isempty(pmodels)
         pmodel = create_pmodel()
         push!(pmodels, pmodel)
@@ -115,10 +114,10 @@ end
 
 #ModelManager
 #region
-export new_field!
+export new_field!, new_handler
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
-mutable struct managed_field
+mutable struct ManagedField
     sym::Symbol
     ref
 end
@@ -151,9 +150,51 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
         getfield(pmodel, name_sym).o.val = value
     end
     pmodel.counters[type] += 1
-    return managed_field(name_sym, getfield(pmodel, name_sym))
+    return ManagedField(name_sym, getfield(pmodel, name_sym))::ManagedField
+end
+
+handlers = Observables.ObserverFunction[]
+
+function new_handler(fun::Function, field::ManagedField)
+    handler = on(field.ref, weak = true) do val
+        fun(val)
+    end
+    notify(field.ref)
+    push!(handlers, handler)
 end
 
 #endregion
+
+function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
+    m_id = get(request_params, :monitor_id, 1)::Int
+    if isempty(slides) || get(request_params, :refresh, "0") != "0"
+        empty!(slides)
+        create_slideshow(pmodel)
+    end
+    slide_titles, slide_bodies = render_slides(slides, m_id)
+    page(pmodel, style = "font-size:40px", prepend = style(
+        """
+        h1 {
+            font-size: 3em !important;
+            line-height: 1em !important;
+        }
+        .slide > p, li {
+            text-align: justify;
+            max-width: 60%;
+            margin: auto;
+        }
+        """
+        ),
+    [
+        StippleUI.Layouts.layout([
+            standard_menu(slide_titles)
+            standard_header(length(slide_titles), m_id)
+            standard_footer(m_id, folder)
+            StippleUI.Layouts.page_container("",
+                slide_bodies
+            )
+        ])
+    ])
+end
 
 end

@@ -16,7 +16,7 @@ possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "
 
 #Handlers
 #region
-handler = on(show_bar.ref) do val
+new_handler(show_bar) do val
     println(string("show bar = ", show_bar.ref[]))
     if val == 1
         setproperty!.(team1data.ref[], :plot, "bar")
@@ -28,9 +28,8 @@ handler = on(show_bar.ref) do val
     notify(team1data.ref)
     notify(team2data.ref)   
 end
-notify(show_bar.ref)
 
-handler = on(choice.ref) do choice
+new_handler(choice) do choice
     for i = 1:2
         y = team1data.ref[i].y
         x = 1:12
@@ -45,7 +44,6 @@ handler = on(choice.ref) do choice
     end
     notify(team2data.ref)
 end
-notify(choice.ref)
 
 # @new_handler!(possible_choices)
 # layout1 = :layout
