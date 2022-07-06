@@ -10,9 +10,14 @@ route("/:monitor_id::Int/") do
 end
 
 function respond(request_params)
-    pmodel = get_or_create_pmodel(request_params)
+    hardrefresh = get(request_params, :hardrefresh, "0") != "0"
+    if hardrefresh
+        pmodel = get_or_create_pmodel(force_create = true)
+    else
+        pmodel = get_or_create_pmodel()
+    end
     println("Time to build UI:")
-    if get(request_params, :refresh, "0") != "0"
+    if hardrefresh || get(request_params, :refresh, "0") != "0"
         reset_counters(pmodel)
         off.(SlideUI.handlers)
         empty!(SlideUI.handlers)

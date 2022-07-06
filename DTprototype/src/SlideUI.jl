@@ -65,8 +65,9 @@ function reset_counters(pmodel::PresentationModel)
     end
 end
 
-function get_or_create_pmodel(request_params::Dict{Symbol, Any})
-    if isempty(pmodels)
+function get_or_create_pmodel(; force_create = false::Bool)
+    force_create && empty!(pmodels)
+    if isempty(pmodels) || force_create
         pmodel = create_pmodel()
         push!(pmodels, pmodel)
     end
