@@ -41,5 +41,8 @@ Thumbs.db
 # NPM packages folder.
 */node_modules/
 
+# presentations folder.
+**/presentations/*
+
 # Database
 */db/*.sqlite

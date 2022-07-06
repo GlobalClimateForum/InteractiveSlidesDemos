@@ -3,7 +3,7 @@ using Reexport
 @reexport using SlideUI
 export create_slideshow, folder
 
-const folder = splitpath(@__DIR__)[end]
+const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 
 function create_slideshow(pmodel)
 show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)
