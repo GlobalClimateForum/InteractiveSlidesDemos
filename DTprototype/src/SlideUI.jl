@@ -171,12 +171,12 @@ end
 
 function standard_menu(slide_titles::Vector{String}, m_id::Int)
     drawer(side="left", v__model="drawer$m_id", [
-            list([
-                item(item_section(string(id) * ": " * title), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
-                for 
-                (id, title) in enumerate(slide_titles)
-                ])
+        list([
+            item(item_section(string(id) * ": " * title), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
+            for 
+            (id, title) in enumerate(slide_titles)
             ])
+        ])
 end
 
 function standard_header(num_slides::Int, m_id::Int)
@@ -189,9 +189,10 @@ function standard_header(num_slides::Int, m_id::Int)
 end
 
 function standard_footer(m_id::Int, folder::AbstractString)
+    isfile("./public/$folder/img/logo.png") ? logo = icon("img:$folder/img/logo.png", size = "md") : logo = ParsedHTMLString("")
     quasar(:footer, quasar(:toolbar, [space(),
-            icon("img:$folder/img/GCFlogo.png", size = "md"),
-            quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
+        logo,
+        quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
     )
 end
 
