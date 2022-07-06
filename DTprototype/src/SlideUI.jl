@@ -171,19 +171,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
         create_slideshow(pmodel)
     end
     slide_titles, slide_bodies = render_slides(slides, m_id)
-    page(pmodel, style = "font-size:40px", prepend = style(
-        """
-        h1 {
-            font-size: 3em !important;
-            line-height: 1em !important;
-        }
-        .slide > p, li {
-            text-align: justify;
-            max-width: 60%;
-            margin: auto;
-        }
-        """
-        ),
+    page(pmodel, prepend = link(href = "$folder/style.css", rel = "stylesheet"),
     [
         StippleUI.Layouts.layout([
             standard_menu(slide_titles)

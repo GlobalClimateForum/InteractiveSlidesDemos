@@ -1,0 +1,12 @@
+h1 {
+    font-size: 3em !important;
+    line-height: 1em !important;
+}
+.slide > p, li {
+    text-align: justify;
+    max-width: 60%;
+    margin: auto;
+}
+.desktop {
+    font-size: 40px;
+}
