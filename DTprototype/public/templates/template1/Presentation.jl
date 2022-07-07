@@ -5,7 +5,7 @@ export create_slideshow, folder
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 
-function create_slideshow(pmodel)
+function create_slideshow(pmodel::PresentationModel)
 show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)
 team1data = new_field!(pmodel, :PlotData, dummy = 1)
 team2data = new_field!(pmodel, :PlotData, dummy = 1)

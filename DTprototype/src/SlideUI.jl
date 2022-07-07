@@ -3,6 +3,9 @@ using Reexport
 @reexport using Stipple, StipplePlotly, StippleUI
 import Random
 
+const m_max = 4 #max number of monitors. Restart session after change. Note: Please note that this setting does not (yet) affect number of fields of PresentationModel (it should)
+m_used = 4 #number of used monitors. This affects the number of generated UI elements upon page load and can be changed without having to restart the julia session.
+
 #PresentationModels
 #region
 export get_or_create_pmodel, PresentationModel, reset_counters
@@ -75,16 +78,6 @@ function get_or_create_pmodel(; force_create = false::Bool)
 end
 
 function create_pmodel()
-    # js_mounted(::PresentationModel) = ""
-    js_mounted(::PresentationModel) = """
-    this._keyListener = function(e) {
-        if (e.key === "s" {
-            current_id1++;
-        }
-    };
-
-    document.addEventListener('keydown', this._keyListener.bind(this));
-    """
     println("Time to initialize model:")
     @time pmodel = Stipple.init(PresentationModel)
     on(pmodel.isready) do ready
@@ -98,7 +91,7 @@ end
 
 #ModelManager
 #region
-export new_field!, new_handler
+export new_field!, new_multi_field!, new_handler
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
@@ -137,6 +130,10 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
     return ManagedField(name_sym, getfield(pmodel, name_sym))::ManagedField
 end
 
+function new_multi_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
+    [new_field!(pmodel, type; value, dummy) for i in m_used]
+end
+
 handlers = Observables.ObserverFunction[]
 
 function new_handler(fun::Function, field::ManagedField)
@@ -153,12 +150,15 @@ end
 #region
 export ui, slide, standard_menu, standard_header, standard_footer
 
-slides = Vector[]
+slides = Vector{Vector}[[],[],[],[],[]] #create slideshow for each monitor + controller
+
 function slide(args...)
-    push!(slides, AbstractString[args...])
+    for m_id in 0:m_used
+        push!(slides[m_id+1], [args...])
+    end
 end
 
-function render_slides(slides_to_render::Vector{Vector}, monitor_id::Int)
+function render_slides(slides_to_render::Vector, monitor_id::Int)
     titles = String[]
     bodies = ParsedHTMLString[]
         for (id,sld) in enumerate(slides_to_render)
@@ -199,11 +199,13 @@ end
 
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
     m_id = get(request_params, :monitor_id, 1)::Int
-    if isempty(slides) || get(request_params, :refresh, "0") != "0"
-        empty!(slides)
-        create_slideshow(pmodel)
+    m_id > m_max && return "There are only $m_max monitors."
+    m_id > m_used && return "Monitor $m_id not active."
+    if isempty(slides[1]) || get(request_params, :refresh, "0") != "0"
+        foreach(x -> empty!(x),slides)
+        create_slideshow(pmodel) #this populates the slide variable which is used below
     end
-    slide_titles, slide_bodies = render_slides(slides, m_id)
+    slide_titles, slide_bodies = render_slides(slides[m_id+1], m_id)
     page(pmodel, prepend = link(href = "$folder/style.css", rel = "stylesheet"),
     [
         StippleUI.Layouts.layout([
