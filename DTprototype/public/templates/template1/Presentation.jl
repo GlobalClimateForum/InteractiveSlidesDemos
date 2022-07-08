@@ -7,11 +7,11 @@ const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 
 function create_slideshow(pmodel::PresentationModel)
 show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)
-team1data = new_field!(pmodel, :PlotData, dummy = 1)
-team2data = new_field!(pmodel, :PlotData, dummy = 1)
+plot1data = new_field!(pmodel, :PlotData, dummy = 1)
+plot2data = new_field!(pmodel, :PlotData, dummy = 1)
 plotconfig = new_field!(pmodel, :PlotConfig)
 plotlayout = new_field!(pmodel, :PlotLayout)
-choice = new_field!(pmodel, :Vector, value = ["Nothing"])
+choice = new_multi_field!(pmodel, :Vector, value = ["Nothing"])
 possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
 
 #Handlers
@@ -19,30 +19,28 @@ possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "
 new_handler(show_bar) do val
     println(string("show bar = ", show_bar.ref[]))
     if val == 1
-        setproperty!.(team1data.ref[], :plot, "bar")
-        setproperty!.(team2data.ref[], :plot, "bar")
+        setproperty!.(plot1data.ref[], :plot, "bar")
+        setproperty!.(plot2data.ref[], :plot, "bar")
     else
-        setproperty!.(team1data.ref[], :plot, "scatter")
-        setproperty!.(team2data.ref[], :plot, "scatter")
+        setproperty!.(plot1data.ref[], :plot, "scatter")
+        setproperty!.(plot2data.ref[], :plot, "scatter")
     end
-    notify(team1data.ref)
-    notify(team2data.ref)   
+    notify(plot1data.ref)
+    notify(plot2data.ref)   
 end
 
-new_handler(choice) do choice
-    for i = 1:2
-        y = team1data.ref[i].y
-        x = 1:12
-        if choice == ["Increase"]
-            y += x./12
-        elseif choice == ["Decrease"]
-            y -= x./12
-        elseif choice == ["Sine"]
-            y += sin.(x.*pi./6)
-        end
-        team2data.ref[i].y = y
+@multi new_handler(choice[m_id]) do choice
+    y = plot1data.ref[m_id].y
+    x = 1:12
+    if choice == ["Increase"]
+        y += x./12
+    elseif choice == ["Decrease"]
+        y -= x./12
+    elseif choice == ["Sine"]
+        y += sin.(x.*pi./6)
     end
-    notify(team2data.ref)
+    plot2data.ref[m_id].y = y
+    notify(plot2data.ref)
 end
 
 # @new_handler!(possible_choices)
@@ -58,7 +56,7 @@ end
 #endregion
 
 slide(
-"""<h1>Title slide</h1>""", 
+"""<h1>Hello team m_id</h1>""", 
     p("The pandemic exposed an unspoken truth. 
     People were not less productive working from home; 
     in fact, many got more work done. What gives? 
@@ -72,7 +70,7 @@ slide(
     h1("Decision slide"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
-    select(choice.sym, options = possible_choices.sym); size = 2
+    select(choice[:m_id], options = possible_choices.sym); size = 2
     )),
 )
 
@@ -80,9 +78,9 @@ slide(
     h2("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
-    plot(team1data.sym, layout = plotlayout.sym, config = plotconfig.sym)]),
+    plot(plot1data.sym, layout = plotlayout.sym, config = plotconfig.sym)]),
 cell([
-    plot(team2data.sym, layout = plotlayout.sym, config = plotconfig.sym)])
+    plot(plot2data.sym, layout = plotlayout.sym, config = plotconfig.sym)])
 ]),
 row(class = "flex-center",
     [radio("Scatter plot", show_bar.sym, val = 0),

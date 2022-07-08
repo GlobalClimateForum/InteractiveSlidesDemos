@@ -3,7 +3,7 @@ using Reexport
 @reexport using Stipple, StipplePlotly, StippleUI
 import Random
 
-const m_max = 4 #max number of monitors. Restart session after change. Note: Please note that this setting does not (yet) affect number of fields of PresentationModel (it should)
+const m_max = 4 #max number of monitors. Note: This setting does not really (yet) affect anything except error messages (the max number of monitors depends on the model fields which are hardcoded).
 m_used = 4 #number of used monitors. This affects the number of generated UI elements upon page load and can be changed without having to restart the julia session.
 
 #PresentationModels
@@ -91,7 +91,7 @@ end
 
 #ModelManager
 #region
-export new_field!, new_multi_field!, new_handler
+export new_field!, new_multi_field!, new_handler, @multi
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
@@ -111,12 +111,12 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
           
             pd(name) = PlotData(
                 x = 1:12,
-                y = rand(rng, 12).*2,
+                y = (1:12)/5,
                 name = name,
                 plot = "scatter",
             )
             
-            value = [pd(name) for name in ["Dummy Team A", "Dummy Team B"]]
+            value = [pd(string("Dummy Team ", m_id)) for m_id in 1:m_used]
         end
     elseif type == :Bool
         if dummy > 0
@@ -131,7 +131,11 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
 end
 
 function new_multi_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
-    [new_field!(pmodel, type; value, dummy) for i in m_used]
+    [new_field!(pmodel, type; value, dummy) for i in 1:m_used]
+end
+
+function Base.getindex(field::Vector{ManagedField}, sym::Symbol)
+    return Symbol(field[1].sym, "<f_id")
 end
 
 handlers = Observables.ObserverFunction[]
@@ -144,17 +148,42 @@ function new_handler(fun::Function, field::ManagedField)
     push!(handlers, handler)
 end
 
+function rep!(e, old, new)
+    for (i,a) in enumerate(e.args)
+        if a==old
+            e.args[i] = new
+        elseif a isa Expr
+            rep!(a, old, new)
+        end
+    end
+    e
+end
+
+macro multi(e1)
+    e2 = copy(e1); e3 = copy(e1); e4 = copy(e1) #m_max relevant
+    return quote
+        $(esc(rep!(e1, :m_id, 1)))
+        $(esc(rep!(e2, :m_id, 2)))
+        $(esc(rep!(e3, :m_id, 3)))
+        $(esc(rep!(e4, :m_id, 4)))
+     end
+end
+
 #endregion
 
 #SLIDE UI
 #region
 export ui, slide, standard_menu, standard_header, standard_footer
 
-slides = Vector{Vector}[[],[],[],[],[]] #create slideshow for each monitor + controller
+slides = Vector{Vector}[[],[],[],[]] #create slideshow for each monitor
 
 function slide(args...)
-    for m_id in 0:m_used
-        push!(slides[m_id+1], [args...])
+    for m_id in 1:m_used
+        monitor_slides = [replace(x,  
+                                                "m_id" => "$m_id", 
+                                    r"[0-9+](<f_id)" => y -> string(parse(Int8,y[1])+m_id-1))
+                                    for x in args]
+        push!(slides[m_id], monitor_slides)
     end
 end
 
@@ -201,11 +230,11 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
     m_id = get(request_params, :monitor_id, 1)::Int
     m_id > m_max && return "There are only $m_max monitors."
     m_id > m_used && return "Monitor $m_id not active."
-    if isempty(slides[1]) || get(request_params, :refresh, "0") != "0"
+    if isempty(slides[1]) || get(request_params, :reset, "0") != "0"
         foreach(x -> empty!(x),slides)
-        create_slideshow(pmodel) #this populates the slide variable which is used below
+        create_slideshow(pmodel)
     end
-    slide_titles, slide_bodies = render_slides(slides[m_id+1], m_id)
+    slide_titles, slide_bodies = render_slides(slides[m_id], m_id)
     page(pmodel, prepend = link(href = "$folder/style.css", rel = "stylesheet"),
     [
         StippleUI.Layouts.layout([
