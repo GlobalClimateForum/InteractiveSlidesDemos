@@ -1,7 +1,7 @@
 module Presentation
 using Reexport
 @reexport using SlideUI
-export create_slideshow, folder
+export create_slideshow, folder, num_monitor
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 
@@ -29,18 +29,20 @@ new_handler(show_bar) do val
     notify(plot2data.ref)   
 end
 
-@multi new_handler(choice[m_id]) do choice
-    y = plot1data.ref[m_id].y
-    x = 1:12
-    if choice == ["Increase"]
-        y += x./12
-    elseif choice == ["Decrease"]
-        y -= x./12
-    elseif choice == ["Sine"]
-        y += sin.(x.*pi./6)
+for m_id in monitor_ids()
+    new_handler(choice[m_id]) do choice
+        y = plot1data.ref[m_id].y
+        x = 1:12
+        if choice == ["Increase"]
+            y += x./12
+        elseif choice == ["Decrease"]
+            y -= x./12
+        elseif choice == ["Sine"]
+            y += sin.(x.*pi./6)
+        end
+        plot2data.ref[m_id].y = y
+        notify(plot2data.ref)
     end
-    plot2data.ref[m_id].y = y
-    notify(plot2data.ref)
 end
 
 # @new_handler!(possible_choices)

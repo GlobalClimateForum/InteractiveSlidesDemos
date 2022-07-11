@@ -2,9 +2,12 @@ module SlideUI
 using Reexport
 @reexport using Stipple, StipplePlotly, StippleUI
 import Random
+export monitor_ids
 
 const m_max = 4 #max number of monitors. Note: This setting does not really (yet) affect anything except error messages (the max number of monitors depends on the model fields which are hardcoded).
-m_used = 4 #number of used monitors. This affects the number of generated UI elements upon page load and can be changed without having to restart the julia session.
+
+function monitor_ids()
+    [1, 2, 3, 4] end
 
 #PresentationModels
 #region
@@ -91,7 +94,7 @@ end
 
 #ModelManager
 #region
-export new_field!, new_multi_field!, new_handler, @multi
+export new_field!, new_multi_field!, new_handler
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
@@ -115,8 +118,7 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
                 name = name,
                 plot = "scatter",
             )
-            
-            value = [pd(string("Dummy Team ", m_id)) for m_id in 1:m_used]
+            value = [pd(string("Dummy Team ", m_id)) for m_id in monitor_ids()]
         end
     elseif type == :Bool
         if dummy > 0
@@ -131,7 +133,7 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
 end
 
 function new_multi_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
-    [new_field!(pmodel, type; value, dummy) for i in 1:m_used]
+    [new_field!(pmodel, type; value, dummy) for i in monitor_ids()]
 end
 
 function Base.getindex(field::Vector{ManagedField}, sym::Symbol)
@@ -159,16 +161,6 @@ function rep!(e, old, new)
     e
 end
 
-macro multi(e1)
-    e2 = copy(e1); e3 = copy(e1); e4 = copy(e1) #m_max relevant
-    return quote
-        $(esc(rep!(e1, :m_id, 1)))
-        $(esc(rep!(e2, :m_id, 2)))
-        $(esc(rep!(e3, :m_id, 3)))
-        $(esc(rep!(e4, :m_id, 4)))
-     end
-end
-
 #endregion
 
 #SLIDE UI
@@ -178,7 +170,7 @@ export ui, slide, standard_menu, standard_header, standard_footer
 slides = Vector{Vector}[[],[],[],[]] #create slideshow for each monitor
 
 function slide(args...)
-    for m_id in 1:m_used
+    for m_id in monitor_ids()
         monitor_slides = [replace(x,  
                                                 "m_id" => "$m_id", 
                                     r"[0-9+](<f_id)" => y -> string(parse(Int8,y[1])+m_id-1))
@@ -228,8 +220,8 @@ end
 
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
     m_id = get(request_params, :monitor_id, 1)::Int
-    m_id > m_max && return "There are only $m_max monitors."
-    m_id > m_used && return "Monitor $m_id not active."
+    !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
+    !(m_id in monitor_ids()) && return "Monitor $m_id not active."
     if isempty(slides[1]) || get(request_params, :reset, "0") != "0"
         foreach(x -> empty!(x),slides)
         create_slideshow(pmodel)
