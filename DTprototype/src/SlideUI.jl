@@ -173,26 +173,33 @@ mutable struct Slide
     Body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; append_class = ""::String, HTMLAttr...)
+function slide(HTMLelem...; append_class = ""::String, title = ""::String, HTMLAttr...)
     HTMLAttr = Dict(HTMLAttr)
     if isempty(HTMLAttr)
         HTMLAttr = Dict{Symbol, Any}() 
     end
-    HTMLAttr[:class] = get(HTMLAttr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide ") * append_class
+    HTMLAttr[:class] = get(HTMLAttr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide") * " " * append_class
     for m_id in monitor_ids()
         body = [replace(x,  
                                                 "m_id" => "$m_id", 
                                     r"[0-9+](<f_id)" => y -> string(parse(Int8,y[1])+m_id-1))
                                     for x in HTMLelem]
-        title = strip(match(r">.*<", String(body[1])).match[2:end-1])
+        if isempty(title) 
+            try
+                title = strip(match(r"(?<=\<h[1-2]\>).+(?=<)", String(body[1])).match)
+            catch
+                title = "Untitled"; println("Warning: Untitled slide")
+            end
+        end
         push!(slides[m_id], Slide(title, HTMLAttr, body))
     end
 end
 
 slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
 
-function titleslide(args...; append_class = ""::String, HTMLAttr...)
-    slide(args..., append_class * " titleslide", HTMLAttr...)
+function titleslide(args...; append_class = ""::String, title = ""::String, HTMLAttr...)
+    append_class = append_class * " titleslide"
+    slide(args...; append_class, title, HTMLAttr...)
 end
 
 function render_slides(slides_to_render::Vector{Slide}, monitor_id::Int)
