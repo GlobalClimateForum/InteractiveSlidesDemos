@@ -165,30 +165,45 @@ end
 
 #SLIDE UI
 #region
-export ui, slide, standard_menu, standard_header, standard_footer
+export ui, slide, titleslide, standard_menu, standard_header, standard_footer
 
-slides = Vector{Vector}[[],[],[],[]] #create slideshow for each monitor
+mutable struct Slide
+    Title::String
+    HTMLAttr::Dict
+    Body::Vector{ParsedHTMLString}
+end
 
-function slide(args...)
+function slide(HTMLelem...; append_class = ""::String, HTMLAttr...)
+    HTMLAttr = Dict(HTMLAttr)
+    if isempty(HTMLAttr)
+        HTMLAttr = Dict{Symbol, Any}() 
+    end
+    HTMLAttr[:class] = get(HTMLAttr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide ") * append_class
     for m_id in monitor_ids()
-        monitor_slides = [replace(x,  
+        body = [replace(x,  
                                                 "m_id" => "$m_id", 
                                     r"[0-9+](<f_id)" => y -> string(parse(Int8,y[1])+m_id-1))
-                                    for x in args]
-        push!(slides[m_id], monitor_slides)
+                                    for x in HTMLelem]
+        title = strip(match(r">.*<", String(body[1])).match[2:end-1])
+        push!(slides[m_id], Slide(title, HTMLAttr, body))
     end
 end
 
-function render_slides(slides_to_render::Vector, monitor_id::Int)
+slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
+
+function titleslide(args...; append_class = ""::String, HTMLAttr...)
+    slide(args..., append_class * " titleslide", HTMLAttr...)
+end
+
+function render_slides(slides_to_render::Vector{Slide}, monitor_id::Int)
     titles = String[]
-    bodies = ParsedHTMLString[]
+    rendered_bodies = ParsedHTMLString[]
         for (id,sld) in enumerate(slides_to_render)
-            push!(titles, strip(match(r">.*<", String(sld[1])).match[2:end-1]))
-            push!(bodies, 
-            Genie.Renderer.Html.div(class = "slide text-center flex-center q-gutter-sm q-col-gutter-sm", 
-            sld, @iif("$id == current_id$monitor_id")))
+            push!(titles, sld.Title)
+            push!(rendered_bodies, Genie.Renderer.Html.div( 
+            sld.Body, @iif("$id == current_id$monitor_id"); sld.HTMLAttr...))
         end
-    return (titles, bodies)
+    return (titles, rendered_bodies)
 end
 
 function standard_menu(slide_titles::Vector{String}, m_id::Int)
@@ -226,7 +241,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
         foreach(x -> empty!(x),slides)
         create_slideshow(pmodel)
     end
-    slide_titles, slide_bodies = render_slides(slides[m_id], m_id)
+    slide_titles, rendered_bodies = render_slides(slides[m_id], m_id)
     page(pmodel, prepend = link(href = "$folder/style.css", rel = "stylesheet"),
     [
         StippleUI.Layouts.layout([
@@ -234,7 +249,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
             standard_header(length(slide_titles), m_id)
             standard_footer(m_id, folder)
             StippleUI.Layouts.page_container("",
-                slide_bodies
+                rendered_bodies
             )
         ])
     ])
