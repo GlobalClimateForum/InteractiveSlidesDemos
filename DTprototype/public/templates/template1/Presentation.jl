@@ -1,7 +1,7 @@
 module Presentation
 using Reexport
 @reexport using SlideUI
-export create_slideshow, folder, num_monitor
+export create_slideshow, folder
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 

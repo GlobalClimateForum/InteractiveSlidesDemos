@@ -165,7 +165,7 @@ end
 
 #SLIDE UI
 #region
-export ui, slide, titleslide, standard_menu, standard_header, standard_footer
+export serve_slideshow, slide, titleslide, standard_menu, standard_header, standard_footer
 
 mutable struct Slide
     Title::String
@@ -241,15 +241,16 @@ function standard_footer(m_id::Int, folder::AbstractString)
 end
 
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
+    push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
     !(m_id in monitor_ids()) && return "Monitor $m_id not active."
-    if isempty(slides[1]) || get(request_params, :reset, "0") != "0"
+    if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
         foreach(x -> empty!(x),slides)
         create_slideshow(pmodel)
     end
     slide_titles, rendered_bodies = render_slides(slides[m_id], m_id)
-    page(pmodel, prepend = link(href = "$folder/style.css", rel = "stylesheet"),
+    page(pmodel,
     [
         StippleUI.Layouts.layout([
             standard_menu(slide_titles, m_id)
@@ -260,6 +261,23 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
             )
         ])
     ])
+end
+
+function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, folder::String)
+    hardreset = get(request_params, :hardreset, "0") != "0"
+    if hardreset
+        pmodel = get_or_create_pmodel(force_create = true)
+    else
+        pmodel = get_or_create_pmodel()
+    end
+    println("Time to build UI:")
+    if hardreset || get(request_params, :reset, "0") != "0"
+        reset_counters(pmodel)
+        off.(SlideUI.handlers)
+        empty!(SlideUI.handlers)
+        pop!(Stipple.Layout.THEMES)
+    end
+    @time ui(pmodel, create_slideshow, request_params, folder) |> html
 end
 #endregion
 end

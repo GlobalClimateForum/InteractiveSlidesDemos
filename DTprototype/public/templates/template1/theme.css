@@ -1,6 +1,6 @@
-h1 {
-    font-size: 3em !important;
-    line-height: 1em !important;
+.slide h1 {
+    font-size: 3em;
+    line-height: 1em;
 }
 .slide > p, li {
     text-align: justify;
