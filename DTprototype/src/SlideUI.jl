@@ -173,12 +173,12 @@ mutable struct Slide
     body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; append_class = ""::String, title = ""::String, HTMLattr...)
+function slide(HTMLelem...; prepend_class = "text-center flex-center q-gutter-sm q-col-gutter-sm"::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
     if isempty(HTMLattr)
         HTMLattr = Dict{Symbol, Any}() 
-    end
-    HTMLattr[:class] = get(HTMLattr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide") * " " * append_class
+    end #"text-center flex-center q-gutter-sm q-col-gutter-sm slide"
+    HTMLattr[:class] = prepend_class * " " * get(HTMLattr, :class, "slide")
     for m_id in monitor_ids()
         body = [replace(x,  
                                                 "m_id" => "$m_id", 
@@ -197,9 +197,17 @@ end
 
 slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
 
-function titleslide(args...; append_class = ""::String, title = ""::String, HTMLattr...)
-    append_class = append_class * " titleslide"
-    slide(args...; append_class, title, HTMLattr...)
+function titleslide(args...; prepend_class = ""::String, title = ""::String, HTMLattr...)
+    HTMLattr = Dict(HTMLattr)
+    if isempty(HTMLattr)
+        HTMLattr = Dict{Symbol, Any}() 
+    end
+    HTMLattr[:class] = "titleslide"
+    if !isempty(prepend_class)
+        slide(args...; prepend_class, title, HTMLattr...)
+    else
+        slide(args...; title, HTMLattr...)
+    end
 end
 
 function render_slides(m_slides::Vector{Slide}, monitor_id::Int)

@@ -77,7 +77,7 @@ slide(
 )
 
 slide(
-    h2("Plot slide"),
+    h1("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
     plot(plot1data.sym, layout = plotlayout.sym, config = plotconfig.sym)]),
