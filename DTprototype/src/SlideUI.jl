@@ -168,17 +168,17 @@ end
 export serve_slideshow, slide, titleslide, standard_menu, standard_header, standard_footer
 
 mutable struct Slide
-    Title::String
-    HTMLAttr::Dict
-    Body::Vector{ParsedHTMLString}
+    title::String
+    HTMLattr::Dict
+    body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; append_class = ""::String, title = ""::String, HTMLAttr...)
-    HTMLAttr = Dict(HTMLAttr)
-    if isempty(HTMLAttr)
-        HTMLAttr = Dict{Symbol, Any}() 
+function slide(HTMLelem...; append_class = ""::String, title = ""::String, HTMLattr...)
+    HTMLattr = Dict(HTMLattr)
+    if isempty(HTMLattr)
+        HTMLattr = Dict{Symbol, Any}() 
     end
-    HTMLAttr[:class] = get(HTMLAttr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide") * " " * append_class
+    HTMLattr[:class] = get(HTMLattr, :class, "text-center flex-center q-gutter-sm q-col-gutter-sm slide") * " " * append_class
     for m_id in monitor_ids()
         body = [replace(x,  
                                                 "m_id" => "$m_id", 
@@ -191,73 +191,71 @@ function slide(HTMLelem...; append_class = ""::String, title = ""::String, HTMLA
                 title = "Untitled"; println("Warning: Untitled slide")
             end
         end
-        push!(slides[m_id], Slide(title, HTMLAttr, body))
+        push!(slides[m_id], Slide(title, HTMLattr, body))
     end
 end
 
 slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
 
-function titleslide(args...; append_class = ""::String, title = ""::String, HTMLAttr...)
+function titleslide(args...; append_class = ""::String, title = ""::String, HTMLattr...)
     append_class = append_class * " titleslide"
-    slide(args...; append_class, title, HTMLAttr...)
+    slide(args...; append_class, title, HTMLattr...)
 end
 
-function render_slides(slides_to_render::Vector{Slide}, monitor_id::Int)
-    titles = String[]
+function render_slides(m_slides::Vector{Slide}, monitor_id::Int)
     rendered_bodies = ParsedHTMLString[]
-        for (id,sld) in enumerate(slides_to_render)
-            push!(titles, sld.Title)
-            push!(rendered_bodies, Genie.Renderer.Html.div( 
-            sld.Body, @iif("$id == current_id$monitor_id"); sld.HTMLAttr...))
+        for (id,sld) in enumerate(m_slides)
+            push!(rendered_bodies, Genie.Renderer.Html.div(
+            sld.body, @iif("$id == current_id$monitor_id"); sld.HTMLattr...))
         end
-    return (titles, rendered_bodies)
+    return rendered_bodies
 end
 
-function standard_menu(slide_titles::Vector{String}, m_id::Int)
+function standard_menu(m_slides::Vector{Slide}, m_id::Int, folder)
     drawer(side="left", v__model="drawer$m_id", [
         list([
             item(item_section(string(id) * ": " * title), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
             for 
-            (id, title) in enumerate(slide_titles)
+            (id, title) in enumerate(getproperty.(m_slides, :title))
             ])
         ])
 end
 
-function standard_header(num_slides::Int, m_id::Int)
+function standard_header(m_slides::Vector{Slide}, m_id::Int, folder)
     quasar(:header, quasar(:toolbar, [
         btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
         btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
-        btn("",icon="navigate_next", @click("current_id$m_id < $num_slides ? current_id$m_id++ : null"))
+        btn("",icon="navigate_next", @click("current_id$m_id < $(length(m_slides)) ? current_id$m_id++ : null"))
         ])
     )
 end
 
-function standard_footer(m_id::Int, folder::AbstractString)
+function standard_footer(m_slides::Vector{Slide}, m_id::Int, folder::AbstractString)
+    titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in m_slides], "titleslide"))
     isfile("./public/$folder/img/logo.png") ? logo = icon("img:$folder/img/logo.png", size = "md") : logo = ParsedHTMLString("")
-    quasar(:footer, quasar(:toolbar, [space(),
-        logo,
-        quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))])
-    )
+    quasar(:footer, quasar(:toolbar, 
+        [space(), logo, quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))]),
+        @iif("!$titleslide_ids.includes(current_id$m_id)"))
 end
 
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
-    push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
     !(m_id in monitor_ids()) && return "Monitor $m_id not active."
     if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
+        push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
         foreach(x -> empty!(x),slides)
         create_slideshow(pmodel)
     end
-    slide_titles, rendered_bodies = render_slides(slides[m_id], m_id)
+    
     page(pmodel,
     [
         StippleUI.Layouts.layout([
-            standard_menu(slide_titles, m_id)
-            standard_header(length(slide_titles), m_id)
-            standard_footer(m_id, folder)
-            StippleUI.Layouts.page_container("",
-                rendered_bodies
+            standard_menu(slides[m_id], m_id, folder)
+            standard_header(slides[m_id], m_id, folder)
+            standard_footer(slides[m_id], m_id, folder)
+            quasar(:page__container,
+                render_slides(slides[m_id], m_id)
             )
         ])
     ])

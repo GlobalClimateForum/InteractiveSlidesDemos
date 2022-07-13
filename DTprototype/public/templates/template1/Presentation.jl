@@ -57,7 +57,7 @@ end
 
 #endregion
 
-slide(
+titleslide(
 """<h1>Hello team m_id</h1>""", 
     p("The pandemic exposed an unspoken truth. 
     People were not less productive working from home; 
