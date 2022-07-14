@@ -165,7 +165,7 @@ end
 
 #SLIDE UI
 #region
-export serve_slideshow, slide, titleslide, standard_menu, standard_header, standard_footer
+export serve_slideshow, slide, titleslide, iftitleslide, slide_id, navcontrols
 
 mutable struct Slide
     title::String
@@ -219,44 +219,31 @@ function render_slides(m_slides::Vector{Slide}, monitor_id::Int)
     return rendered_bodies
 end
 
-function standard_menu(m_slides::Vector{Slide}, m_id::Int, folder)
-    drawer(side="left", v__model="drawer$m_id", [
-        list([
-            item(item_section(string(id) * ": " * title), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
-            for 
-            (id, title) in enumerate(getproperty.(slides[m_id], :title))
-            ])
-        ])
-end
-
-function navcontrols(num_slides, m_id)
+function navcontrols(m_id::Int)
+    num_slides = length(slides[m_id])
     [btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
     btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
     btn("",icon="navigate_next", @click("current_id$m_id < $(num_slides) ? current_id$m_id++ : null"))]
 end
 
-# header(m_slides, m_id, args...; kwargs...) = quasar(:header, quasar(:toolbar, args..., kwargs...))
-# qfooter(m_slides, m_id, args...; kwargs...) = quasar(:footer, quasar(:toolbar, args..., kwargs...))
-
-function standard_header(m_slides::Vector{Slide}, m_id::Int, folder)
-    quasar(:header, quasar(:toolbar, navcontrols(length(m_slides), m_id)))
-end
-
-function iftitleslide(m_id)
+function iftitleslide(m_id::Int)
     titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in slides[m_id]], "titleslide"))
     @iif("!$titleslide_ids.includes(current_id$m_id)")
 end
 
-slide_id(m_id) = span("", @text(Symbol("current_id$m_id")), class = "slide_id")
+function slide_id(m_id::Int) span("", @text(Symbol("current_id$m_id")), class = "slide_id") end
 
-function standard_footer(m_slides::Vector{Slide}, m_id::Int, folder::AbstractString)
-    isfile("./public/$folder/img/logo.png") ? logo = icon("img:$folder/img/logo.png", size = "md") : logo = ParsedHTMLString("")
-    quasar(:footer, [quasar(:separator), quasar(:toolbar, 
-        [space(), logo, "GCF", slide_id(m_id)])],
-        iftitleslide(m_id))
+function menu(m_id::Int, item_fun; side = "left")
+drawer(v__model = "drawer$m_id", [
+    list([
+        item(item_section(item_fun(id, title)), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
+        for 
+        (id, title) in enumerate(getproperty.(slides[m_id], :title))
+        ])
+    ]; side)
 end
 
-function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
+function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI::Function, request_params::Dict{Symbol, Any}, folder::String)
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
     !(m_id in monitor_ids()) && return "Monitor $m_id not active."
@@ -270,9 +257,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
     page(pmodel,
     [
         StippleUI.Layouts.layout([
-            standard_menu(slides[m_id], m_id, folder)
-            standard_header(slides[m_id], m_id, folder)
-            standard_footer(slides[m_id], m_id, folder)
+            create_auxUI(m_id)
             quasar(:page__container,
                 render_slides(slides[m_id], m_id)
             )
@@ -280,7 +265,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
     ])
 end
 
-function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, folder::String)
+function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, create_auxUI::Function, folder::String)
     hardreset = get(request_params, :hardreset, "0") != "0"
     if hardreset
         pmodel = get_or_create_pmodel(force_create = true)
@@ -294,7 +279,7 @@ function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Fu
         empty!(SlideUI.handlers)
         pop!(Stipple.Layout.THEMES)
     end
-    @time ui(pmodel, create_slideshow, request_params, folder) |> html 
+    @time ui(pmodel, create_slideshow, create_auxUI, request_params, folder) |> html 
 end
 #endregion
 end

@@ -1,9 +1,17 @@
 module Presentation
 using Reexport
 @reexport using SlideUI
-export create_slideshow, folder
+export create_slideshow, create_auxUI, folder
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
+
+function create_auxUI(m_id::Int) #header, footer, menu
+    [quasar(:header, quasar(:toolbar, navcontrols(m_id)))
+    quasar(:footer, [quasar(:separator), quasar(:toolbar, 
+        [space(), slide_id(m_id)])],
+        iftitleslide(m_id))
+    menu(m_id, (id, title) -> string(id) * ": " * title)]
+end
 
 function create_slideshow(pmodel::PresentationModel)
 show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)

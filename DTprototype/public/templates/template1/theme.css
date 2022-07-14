@@ -1,12 +1,105 @@
-.slide h1 {
-    font-size: 3em;
-    line-height: 1em;
+:root {
+    --q-color-primary: #0779e4;
+    --q-color-secondary: #6cb1f2;
+    --q-color-dark: #0373dc;
+    --q-color-info: #373b44;
+    --q-color-positive: #72c8a9;
+    --q-color-negative: #bd5631;
+    --q-color-accent: #9c27b0;
+    --q-color-warning: #f2c037;
+    --q-color-white: rgb(240, 240, 240);
+    --q-color-black: rgb(31, 31, 31);
 }
-.slide > p, li {
+
+header {
+    background: var(--q-color-white);
+    /* color: var(--q-color-white); */
+}
+
+body {
+    color:var(--q-color-black);
+    /* background-color: var(--q-color-primary); */
+}
+
+.q-separator {
+    height: 3px;
+    background-color:var(--q-color-secondary);
+    stroke-width: 20px;
+}
+
+html {
+    font-size: 2.5vw;
+}
+
+.titleslide h1 {
+    font-size: 3.5rem;
+    line-height: 3.5rem
+}
+
+.slide {
+    padding: 2vmin
+}
+
+@media screen and (max-width: 1600px) and (min-width: 600px) {
+    html {
+    font-size: 40px;
+  }
+  .titleslide h1 {
+    font-size: 2rem;
+    line-height: 2rem
+  }
+}
+
+@media screen and (max-width: 600px) {
+    html {
+    font-size: 25px;
+  }
+  .titleslide h1 {
+    font-size: 2rem;
+    line-height: 2rem
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Helvetica, sans-serif, Arial;
+    margin-top: 0.1rem;
+    margin-bottom: 0.1rem;
+    hyphens: auto
+}
+
+h1 {
+    font-size: 1.75rem;
+    line-height: 1.75rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+    line-height: 1.4rem;
+}
+
+.titleslide {
+    padding: 5vmin
+}
+
+li {
     text-align: justify;
-    max-width: 60%;
+    max-width: 90%;
     margin: auto;
 }
-.desktop {
-    font-size: 40px;
+
+p, header, ul, ol {
+    font-size: 1rem;
+}
+
+footer {
+    font-size: 0.75rem;
+}
+
+img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.q-drawer {
+    font-size: 0.5rem;
 }
