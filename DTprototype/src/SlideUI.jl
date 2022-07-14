@@ -253,6 +253,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, request_param
     if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
         push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
         foreach(x -> empty!(x),slides)
+        Genie.Router.delete!(Symbol("get_stipple.jl_master_assets_css_stipplecore.css")) 
         create_slideshow(pmodel)
     end
     
