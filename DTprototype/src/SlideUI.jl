@@ -173,7 +173,7 @@ mutable struct Slide
     body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; prepend_class = "text-center flex-center q-gutter-sm q-col-gutter-sm"::String, title = ""::String, HTMLattr...)
+function slide(HTMLelem...; prepend_class = "text-center flex-center"::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
     if isempty(HTMLattr)
         HTMLattr = Dict{Symbol, Any}() 
@@ -224,26 +224,36 @@ function standard_menu(m_slides::Vector{Slide}, m_id::Int, folder)
         list([
             item(item_section(string(id) * ": " * title), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
             for 
-            (id, title) in enumerate(getproperty.(m_slides, :title))
+            (id, title) in enumerate(getproperty.(slides[m_id], :title))
             ])
         ])
 end
 
-function standard_header(m_slides::Vector{Slide}, m_id::Int, folder)
-    quasar(:header, quasar(:toolbar, [
-        btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
-        btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
-        btn("",icon="navigate_next", @click("current_id$m_id < $(length(m_slides)) ? current_id$m_id++ : null"))
-        ])
-    )
+function navcontrols(num_slides, m_id)
+    [btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
+    btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
+    btn("",icon="navigate_next", @click("current_id$m_id < $(num_slides) ? current_id$m_id++ : null"))]
 end
 
+# header(m_slides, m_id, args...; kwargs...) = quasar(:header, quasar(:toolbar, args..., kwargs...))
+# qfooter(m_slides, m_id, args...; kwargs...) = quasar(:footer, quasar(:toolbar, args..., kwargs...))
+
+function standard_header(m_slides::Vector{Slide}, m_id::Int, folder)
+    quasar(:header, quasar(:toolbar, navcontrols(length(m_slides), m_id)))
+end
+
+function iftitleslide(m_id)
+    titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in slides[m_id]], "titleslide"))
+    @iif("!$titleslide_ids.includes(current_id$m_id)")
+end
+
+slide_id(m_id) = span("", @text(Symbol("current_id$m_id")), class = "slide_id")
+
 function standard_footer(m_slides::Vector{Slide}, m_id::Int, folder::AbstractString)
-    titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in m_slides], "titleslide"))
     isfile("./public/$folder/img/logo.png") ? logo = icon("img:$folder/img/logo.png", size = "md") : logo = ParsedHTMLString("")
-    quasar(:footer, quasar(:toolbar, 
-        [space(), logo, quasar(:toolbar__title, "GCF"), span("", @text(Symbol("current_id$m_id")))]),
-        @iif("!$titleslide_ids.includes(current_id$m_id)"))
+    quasar(:footer, [quasar(:separator), quasar(:toolbar, 
+        [space(), logo, "GCF", slide_id(m_id)])],
+        iftitleslide(m_id))
 end
 
 function ui(pmodel::PresentationModel, create_slideshow::Function, request_params::Dict{Symbol, Any}, folder::String)
@@ -284,7 +294,7 @@ function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Fu
         empty!(SlideUI.handlers)
         pop!(Stipple.Layout.THEMES)
     end
-    @time ui(pmodel, create_slideshow, request_params, folder) |> html
+    @time ui(pmodel, create_slideshow, request_params, folder) |> html 
 end
 #endregion
 end
