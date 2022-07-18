@@ -213,7 +213,7 @@ end
 function render_slides(m_slides::Vector{Slide}, monitor_id::Int)
     rendered_bodies = ParsedHTMLString[]
         for (id,sld) in enumerate(m_slides)
-            push!(rendered_bodies, Genie.Renderer.Html.div(
+            push!(rendered_bodies, quasar(:page,
             sld.body, @iif("$id == current_id$monitor_id"); sld.HTMLattr...))
         end
     return rendered_bodies
