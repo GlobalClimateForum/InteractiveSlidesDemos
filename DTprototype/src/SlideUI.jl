@@ -173,7 +173,7 @@ mutable struct Slide
     body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; prepend_class = "text-center flex-center"::String, title = ""::String, HTMLattr...)
+function slide(HTMLelem...; prepend_class = ""::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
     if isempty(HTMLattr)
         HTMLattr = Dict{Symbol, Any}() 
@@ -197,7 +197,7 @@ end
 
 slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
 
-function titleslide(args...; prepend_class = ""::String, title = ""::String, HTMLattr...)
+function titleslide(args...; prepend_class = "text-center flex-center"::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
     if isempty(HTMLattr)
         HTMLattr = Dict{Symbol, Any}() 
