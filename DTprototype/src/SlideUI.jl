@@ -15,7 +15,8 @@ export get_or_create_pmodel, PresentationModel, reset_counters
 register_mixin(@__MODULE__)
 
 @reactive! mutable struct PresentationModel <: ReactiveModel
-    counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :Int => 1, :Vector => 1, :PlotData => 1, :PlotLayout => 1, :PlotConfig => 1)
+    counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :String => 1, :Int => 1, :Vector => 1, :PlotData => 1, 
+    :PlotLayout => 1, :PlotConfig => 1, :DataTable => 1, :DataTablePagination => 1)
     current_id0::R{Int8} = 1
     current_id1::R{Int8} = 1
     current_id2::R{Int8} = 1
@@ -36,6 +37,26 @@ register_mixin(@__MODULE__)
     int8::R{Int} = 0
     int9::R{Int} = 0
     int10::R{Int} = 0
+    bool1::R{Bool} = false
+    bool2::R{Bool} = false
+    bool3::R{Bool} = false
+    bool4::R{Bool} = false
+    bool5::R{Bool} = false
+    bool6::R{Bool} = false
+    bool7::R{Bool} = false
+    bool8::R{Bool} = false
+    bool9::R{Bool} = false
+    bool10::R{Bool} = false
+    string1::R{String} = ""
+    string2::R{String} = ""
+    string3::R{String} = ""
+    string4::R{String} = ""
+    string5::R{String} = ""
+    string6::R{String} = ""
+    string7::R{String} = ""
+    string8::R{String} = ""
+    string9::R{String} = ""
+    string10::R{String} = ""
     vector1::R{Vector} = []
     vector2::R{Vector} = []
     vector3::R{Vector} = []
@@ -61,6 +82,16 @@ register_mixin(@__MODULE__)
     plotconfig3::R{PlotConfig} = PlotConfig()
     plotconfig4::R{PlotConfig} = PlotConfig()
     plotconfig5::R{PlotConfig} = PlotConfig()
+    datatable1::R{DataTable} = DataTable()
+    datatable2::R{DataTable} = DataTable()
+    datatable3::R{DataTable} = DataTable()
+    datatable4::R{DataTable} = DataTable()
+    datatable5::R{DataTable} = DataTable()
+    datatablepagination1::R{DataTablePagination} = DataTablePagination()
+    datatablepagination2::R{DataTablePagination} = DataTablePagination()
+    datatablepagination3::R{DataTablePagination} = DataTablePagination()
+    datatablepagination4::R{DataTablePagination} = DataTablePagination()
+    datatablepagination5::R{DataTablePagination} = DataTablePagination()
 end
 
 pmodels = PresentationModel[]
@@ -105,9 +136,6 @@ end
 function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
     rng = Random.MersenneTwister(dummy)
     name = lowercase(string(type, pmodel.counters[type]))
-    if name[1:4] == "bool"
-        name = "int" * name[5:end]
-    end
     name_sym = Symbol(name)
     if type == :PlotData
         if dummy > 0
@@ -119,10 +147,6 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
                 plot = "scatter",
             )
             value = [pd(string("Dummy Team ", m_id)) for m_id in monitor_ids()]
-        end
-    elseif type == :Bool
-        if dummy > 0
-            value = rand(rng, [0 1])
         end
     end
     if value != Nothing
