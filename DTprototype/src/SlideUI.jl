@@ -129,8 +129,9 @@ export new_field!, new_multi_field!, new_handler
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
+    str::String
     sym::Symbol
-    ref
+    ref::Reactive
 end
 
 function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
@@ -153,7 +154,7 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
         getfield(pmodel, name_sym).o.val = value
     end
     pmodel.counters[type] += 1
-    return ManagedField(name_sym, getfield(pmodel, name_sym))::ManagedField
+    return ManagedField(name, name_sym, getfield(pmodel, name_sym))::ManagedField
 end
 
 function new_multi_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
@@ -280,9 +281,9 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
     
     page(pmodel,
     [
-        StippleUI.Layouts.layout([
+        StippleUI.Layouts.layout(view="hHh lpR lFf", [
             create_auxUI(m_id)
-            quasar(:page__container,
+            quasar(:page__container, 
                 render_slides(slides[m_id], m_id)
             )
         ])
