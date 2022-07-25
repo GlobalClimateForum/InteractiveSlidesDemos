@@ -17,6 +17,7 @@ register_mixin(@__MODULE__)
 @reactive! mutable struct PresentationModel <: ReactiveModel
     counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :String => 1, :Int => 1, :Vector => 1, :PlotData => 1, 
     :PlotLayout => 1, :PlotConfig => 1, :DataTable => 1, :DataTablePagination => 1)
+    num_slides::R{Int8} = 0
     current_id0::R{Int8} = 1
     current_id1::R{Int8} = 1
     current_id2::R{Int8} = 1
@@ -167,12 +168,16 @@ end
 
 handlers = Observables.ObserverFunction[]
 
-function new_handler(fun::Function, field::ManagedField)
-    handler = on(field.ref, weak = true) do val
+function new_handler(fun::Function, field::Reactive)
+    handler = on(field, weak = true) do val
         fun(val)
     end
-    notify(field.ref)
+    notify(field)
     push!(handlers, handler)
+end
+
+function new_handler(fun::Function, field::ManagedField)
+    new_handler(fun, field.ref)
 end
 
 function rep!(e, old, new)
@@ -245,10 +250,9 @@ function render_slides(m_slides::Vector{Slide}, monitor_id::Int)
 end
 
 function navcontrols(m_id::Int)
-    num_slides = length(slides[m_id])
     [btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
     btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
-    btn("",icon="navigate_next", @click("current_id$m_id < $(num_slides) ? current_id$m_id++ : null"))]
+    btn("",icon="navigate_next", @click("current_id$m_id < num_slides ? current_id$m_id++ : null"))]
 end
 
 function iftitleslide(m_id::Int)
@@ -278,7 +282,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
         Genie.Router.delete!(Symbol("get_stipple.jl_master_assets_css_stipplecore.css")) 
         create_slideshow(pmodel)
     end
-    
+    pmodel.num_slides = length(slides[m_id])
     page(pmodel,
     [
         StippleUI.Layouts.layout(view="hHh lpR lFf", [
