@@ -282,7 +282,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
         Genie.Router.delete!(Symbol("get_stipple.jl_master_assets_css_stipplecore.css")) 
         create_slideshow(pmodel)
     end
-    pmodel.num_slides = length(slides[m_id])
+    pmodel.num_slides[] = length(slides[m_id])
     page(pmodel,
     [
         StippleUI.Layouts.layout(view="hHh lpR lFf", [

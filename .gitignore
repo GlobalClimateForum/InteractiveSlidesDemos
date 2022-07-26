@@ -47,3 +47,4 @@ Thumbs.db
 # Database
 */db/*.sqlite
 /stipplecore.css
+*.so
