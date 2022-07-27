@@ -1,13 +1,8 @@
 module SlideUI
 using Reexport
 @reexport using Stipple, StipplePlotly, StippleUI
-import Random
-export monitor_ids
 
 const m_max = 4 #max number of monitors. Note: This setting does not really (yet) affect anything except error messages (the max number of monitors depends on the model fields which are hardcoded).
-
-function monitor_ids()
-    [1, 2, 3, 4] end
 
 #PresentationModels
 #region
@@ -135,22 +130,9 @@ mutable struct ManagedField
     ref::Reactive
 end
 
-function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
-    rng = Random.MersenneTwister(dummy)
+function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing)
     name = lowercase(string(type, pmodel.counters[type]))
     name_sym = Symbol(name)
-    if type == :PlotData
-        if dummy > 0
-          
-            pd(name) = PlotData(
-                x = 1:12,
-                y = (1:12)/5,
-                name = name,
-                plot = "scatter",
-            )
-            value = [pd(string("Dummy Team ", m_id)) for m_id in monitor_ids()]
-        end
-    end
     if value != Nothing
         getfield(pmodel, name_sym).o.val = value
     end
@@ -158,8 +140,8 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, du
     return ManagedField(name, name_sym, getfield(pmodel, name_sym))::ManagedField
 end
 
-function new_multi_field!(pmodel::PresentationModel, type::Symbol; value = Nothing, dummy = 0::Int)
-    [new_field!(pmodel, type; value, dummy) for i in monitor_ids()]
+function new_multi_field!(pmodel::PresentationModel, type::Symbol, num_monitors::Int; value = Nothing)
+    [new_field!(pmodel, type; value) for i in 1:num_monitors]
 end
 
 function Base.getindex(field::Vector{ManagedField}, sym::Symbol)
@@ -203,13 +185,13 @@ mutable struct Slide
     body::Vector{ParsedHTMLString}
 end
 
-function slide(HTMLelem...; prepend_class = ""::String, title = ""::String, HTMLattr...)
+function slide(num_monitors::Int, HTMLelem...; prepend_class = ""::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
     if isempty(HTMLattr)
         HTMLattr = Dict{Symbol, Any}() 
     end #"text-center flex-center q-gutter-sm q-col-gutter-sm slide"
     HTMLattr[:class] = prepend_class * " " * get(HTMLattr, :class, "slide")
-    for m_id in monitor_ids()
+    for m_id in 1:num_monitors
         body = [replace(x,  
                                                 "m_id" => "$m_id", 
                                     r"[0-9+](<f_id)" => y -> string(parse(Int8,y[1])+m_id-1))
@@ -275,7 +257,6 @@ end
 function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI::Function, request_params::Dict{Symbol, Any}, folder::String)
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
-    !(m_id in monitor_ids()) && return "Monitor $m_id not active."
     if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
         push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
         foreach(x -> empty!(x),slides)

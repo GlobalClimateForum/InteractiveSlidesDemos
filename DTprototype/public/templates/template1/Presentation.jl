@@ -5,6 +5,8 @@ export create_slideshow, create_auxUI, folder
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 
+num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
+
 function create_auxUI(m_id::Int) #header, footer, menu
     [quasar(:header, quasar(:toolbar, navcontrols(m_id)))
     quasar(:footer, [quasar(:separator), quasar(:toolbar, 
@@ -14,12 +16,20 @@ function create_auxUI(m_id::Int) #header, footer, menu
 end
 
 function create_slideshow(pmodel::PresentationModel)
-show_bar = new_field!(pmodel, :Bool, value = 1, dummy = 0)
-plot1data = new_field!(pmodel, :PlotData, dummy = 1)
-plot2data = new_field!(pmodel, :PlotData, dummy = 1)
+pd(name) = PlotData(
+    x = 1:12,
+    y = (1:12)/5,
+    name = name,
+    plot = "scatter",
+)
+teamsdata = [pd(string("Dummy Team ", m_id)) for m_id in 1:num_monitors()]
+
+show_bar = new_field!(pmodel, :Bool, value = 1)
+plot1data = new_field!(pmodel, :PlotData, value = teamsdata)
+plot2data = new_field!(pmodel, :PlotData, value = deepcopy(teamsdata))
 plotconfig = new_field!(pmodel, :PlotConfig)
 plotlayout = new_field!(pmodel, :PlotLayout)
-choice = new_multi_field!(pmodel, :Vector, value = ["Nothing"])
+choice = new_multi_field!(pmodel, :Vector, num_monitors(), value = ["Nothing"])
 possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
 
 #Handlers
@@ -37,7 +47,7 @@ new_handler(show_bar) do val
     notify(plot2data.ref)   
 end
 
-for m_id in monitor_ids()
+for m_id in 1:num_monitors()
     new_handler(choice[m_id]) do choice
         y = plot1data.ref[m_id].y
         x = 1:12
@@ -53,19 +63,9 @@ for m_id in monitor_ids()
     end
 end
 
-# @new_handler!(possible_choices)
-# layout1 = :layout
-# config1 = :config
-
-# function add_handler(var1::Symbol, var2::Symbol; on = [vars], notify = [vars]) #perhaps only kwargs
-#     if var1
-#         var1 * var2
-# # "this function or macro takes these symbols and creates the respective handler"
-# end
-
 #endregion
 
-titleslide(
+titleslide(num_monitors(),
 """<h1>Hello team m_id</h1>""", 
     p("The pandemic exposed an unspoken truth. 
     People were not less productive working from home; 
@@ -76,7 +76,7 @@ titleslide(
     Take out the stand-ups, check-ins, and meetings spent on chit-chat and vague ideas which, ya know, could have been an email.")
 )
 
-slide(
+slide(num_monitors(),
     h1("Decision slide"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
@@ -84,7 +84,7 @@ slide(
     )),
 )
 
-slide(
+slide(num_monitors(),
     h1("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
