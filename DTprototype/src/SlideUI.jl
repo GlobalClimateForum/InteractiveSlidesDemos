@@ -254,11 +254,12 @@ drawer(v__model = "drawer$m_id", [
     ]; side)
 end
 
-function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI::Function, request_params::Dict{Symbol, Any}, folder::String)
+function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI::Function, settings::Dict, request_params::Dict{Symbol, Any})
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
+    m_id > settings[:num_monitors] && return "Only $(settings[:num_monitors]) monitors are active."
     if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
-        push!(Stipple.Layout.THEMES, () -> [link(href = "$folder/theme.css", rel = "stylesheet"), ""])
+        push!(Stipple.Layout.THEMES, () -> [link(href = "$(settings[:folder])/theme.css", rel = "stylesheet"), ""])
         foreach(x -> empty!(x),slides)
         Genie.Router.delete!(Symbol("get_stipple.jl_master_assets_css_stipplecore.css")) 
         create_slideshow(pmodel)
@@ -275,7 +276,7 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
     ])
 end
 
-function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, create_auxUI::Function, folder::String)
+function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, create_auxUI::Function, settings::Dict)
     hardreset = get(request_params, :hardreset, "0") != "0"
     if hardreset
         pmodel = get_or_create_pmodel(force_create = true)
@@ -289,7 +290,7 @@ function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Fu
         empty!(SlideUI.handlers)
         pop!(Stipple.Layout.THEMES)
     end
-    @time ui(pmodel, create_slideshow, create_auxUI, request_params, folder) |> html 
+    @time ui(pmodel, create_slideshow, create_auxUI, settings, request_params) |> html 
 end
 #endregion
 end
