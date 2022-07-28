@@ -90,23 +90,6 @@ register_mixin(@__MODULE__)
     datatablepagination5::R{DataTablePagination} = DataTablePagination()
 end
 
-pmodels = PresentationModel[]
-
-function reset_counters(pmodel::PresentationModel)
-    for key in keys(pmodel.counters)
-        pmodel.counters[key] = 1
-    end
-end
-
-function get_or_create_pmodel(; force_create = false::Bool)
-    force_create && empty!(pmodels)
-    if isempty(pmodels) || force_create
-        pmodel = create_pmodel()
-        push!(pmodels, pmodel)
-    end
-    pmodels[1]
-end
-
 function create_pmodel()
     println("Time to initialize model:")
     @time pmodel = Stipple.init(PresentationModel)
@@ -116,6 +99,24 @@ function create_pmodel()
     end
 
     return pmodel
+end
+
+let pmodel_ref = Ref{PresentationModel}() 
+    #https://discourse.julialang.org/t/how-to-correctly-define-and-use-global-variables-in-the-module-in-julia/65720/6?u=jochen2
+    #https://stackoverflow.com/questions/24541723/does-julia-support-static-variables-with-function-scope
+    global get_or_create_pmodel
+    function get_or_create_pmodel(; force_create = false::Bool)
+        if !isassigned(pmodel_ref) || force_create
+            pmodel_ref[] = create_pmodel()
+        end
+        pmodel_ref[]
+    end
+end
+
+function reset_counters(pmodel::PresentationModel)
+    for key in keys(pmodel.counters)
+        pmodel.counters[key] = 1
+    end
 end
 #endregion
 
