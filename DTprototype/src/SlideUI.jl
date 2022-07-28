@@ -9,7 +9,7 @@ const m_max = 4 #max number of monitors. Note: This setting does not really (yet
 export get_or_create_pmodel, PresentationModel, reset_counters
 register_mixin(@__MODULE__)
 
-@reactive! mutable struct PresentationModel <: ReactiveModel
+@reactive! struct PresentationModel <: ReactiveModel
     counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :String => 1, :Int => 1, :Vector => 1, :PlotData => 1, 
     :PlotLayout => 1, :PlotConfig => 1, :DataTable => 1, :DataTablePagination => 1)
     num_slides::R{Int8} = 0
