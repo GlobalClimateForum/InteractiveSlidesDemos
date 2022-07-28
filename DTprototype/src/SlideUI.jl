@@ -188,11 +188,13 @@ end
 #region
 export serve_slideshow, slide, titleslide, iftitleslide, slide_id, navcontrols
 
-mutable struct Slide
+struct Slide
     title::String
     HTMLattr::Dict
-    body::Vector{ParsedHTMLString}
+    body::ParsedHTMLString
 end
+
+slides = Ref{NTuple{4, Vector{Slide}}}(([],[],[],[])) #4 monitors, https://discourse.julialang.org/t/how-to-correctly-define-and-use-global-variables-in-the-module-in-julia/65720/6?u=jochen2
 
 function slide(num_monitors::Int, HTMLelem...; prepend_class = ""::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
@@ -200,6 +202,7 @@ function slide(num_monitors::Int, HTMLelem...; prepend_class = ""::String, title
         HTMLattr = Dict{Symbol, Any}() 
     end #"text-center flex-center q-gutter-sm q-col-gutter-sm slide"
     HTMLattr[:class] = prepend_class * " " * get(HTMLattr, :class, "slide")
+    slide_id = length(slides[][1]) + 1
     for m_id in 1:num_monitors
         body = [replace(x,  
                                                 "m_id" => "$m_id", 
@@ -212,11 +215,10 @@ function slide(num_monitors::Int, HTMLelem...; prepend_class = ""::String, title
                 title = "Untitled"; println("Warning: Untitled slide")
             end
         end
-        push!(slides[m_id], Slide(title, HTMLattr, body))
+        body = quasar(:page, body, @iif("$slide_id == current_id$m_id"); HTMLattr...)
+        push!(slides[][m_id], Slide(title, HTMLattr, body))
     end
 end
-
-slides = Vector{Vector{Slide}}([[],[],[],[]]) #create slideshow for each monitor
 
 function titleslide(args...; prepend_class = "text-center flex-center"::String, title = ""::String, HTMLattr...)
     HTMLattr = Dict(HTMLattr)
@@ -231,15 +233,6 @@ function titleslide(args...; prepend_class = "text-center flex-center"::String, 
     end
 end
 
-function render_slides(m_slides::Vector{Slide}, monitor_id::Int)
-    rendered_bodies = ParsedHTMLString[]
-        for (id,sld) in enumerate(m_slides)
-            push!(rendered_bodies, quasar(:page,
-            sld.body, @iif("$id == current_id$monitor_id"); sld.HTMLattr...))
-        end
-    return rendered_bodies
-end
-
 function navcontrols(m_id::Int)
     [btn("",icon="menu", @click("drawer$m_id = ! drawer$m_id"))
     btn("",icon="chevron_left", @click("current_id$m_id > 1 ? current_id$m_id-- : null"))
@@ -247,7 +240,7 @@ function navcontrols(m_id::Int)
 end
 
 function iftitleslide(m_id::Int)
-    titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in slides[m_id]], "titleslide"))
+    titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in slides[][m_id]], "titleslide"))
     @iif("!$titleslide_ids.includes(current_id$m_id)")
 end
 
@@ -258,7 +251,7 @@ drawer(v__model = "drawer$m_id", [
     list([
         item(item_section(item_fun(id, title)), :clickable, @click("current_id$m_id = $(id); drawer$m_id = ! drawer$m_id")) 
         for 
-        (id, title) in enumerate(getproperty.(slides[m_id], :title))
+        (id, title) in enumerate(getproperty.(slides[][m_id], :title))
         ])
     ]; side)
 end
@@ -267,19 +260,19 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
     m_id > settings[:num_monitors] && return "Only $(settings[:num_monitors]) monitors are active."
-    if isempty(slides[1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
+    if isempty(slides[][1]) || get(request_params, :reset, "0") != "0" || get(request_params, :hardreset, "0") != "0"
         push!(Stipple.Layout.THEMES, () -> [link(href = "$(settings[:folder])/theme.css", rel = "stylesheet"), ""])
-        foreach(x -> empty!(x),slides)
+        foreach(x -> empty!(x),slides[])
         Genie.Router.delete!(Symbol("get_stipple.jl_master_assets_css_stipplecore.css")) 
         create_slideshow(pmodel)
     end
-    pmodel.num_slides[] = length(slides[m_id])
+    pmodel.num_slides[] = length(slides[][m_id])
     page(pmodel,
     [
         StippleUI.Layouts.layout(view="hHh lpR lFf", [
             create_auxUI(m_id)
             quasar(:page__container, 
-                render_slides(slides[m_id], m_id)
+                getproperty.(slides[][m_id], :body)
             )
         ])
     ])
