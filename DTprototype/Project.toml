@@ -1,7 +1,7 @@
 name = "DTprototype"
 uuid = "2b376672-ff9d-493f-8f76-e07e9f28ae8e"
 authors = ["jochenkrattenmacher <thisisntreal@nono.com>"]
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"

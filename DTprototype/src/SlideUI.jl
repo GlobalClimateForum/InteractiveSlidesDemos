@@ -122,7 +122,7 @@ end
 
 #ModelManager
 #region
-export new_field!, new_multi_field!, new_handler
+export new_field!, new_multi_field!, new_handler, reset_handlers
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
@@ -149,14 +149,22 @@ function Base.getindex(field::Vector{ManagedField}, sym::Symbol)
     return Symbol(field[1].sym, "<f_id")
 end
 
-handlers = Observables.ObserverFunction[]
+let handlers = Observables.ObserverFunction[] #https://stackoverflow.com/questions/24541723/does-julia-support-static-variables-with-function-scope
+    global new_handler
+    global reset_handlers
 
-function new_handler(fun::Function, field::Reactive)
-    handler = on(field, weak = true) do val
-        fun(val)
+    function new_handler(fun::Function, field::Reactive)
+        handler = on(field, weak = true) do val
+            fun(val)
+        end
+        notify(field)
+        push!(handlers, handler)
     end
-    notify(field)
-    push!(handlers, handler)
+
+    function reset_handlers()
+        off.(handlers)
+        empty!(handlers)
+    end
 end
 
 function new_handler(fun::Function, field::ManagedField)
@@ -287,8 +295,7 @@ function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Fu
     println("Time to build UI:")
     if hardreset || get(request_params, :reset, "0") != "0"
         reset_counters(pmodel)
-        off.(SlideUI.handlers)
-        empty!(SlideUI.handlers)
+        reset_handlers()
         pop!(Stipple.Layout.THEMES)
     end
     @time ui(pmodel, create_slideshow, create_auxUI, settings, request_params) |> html 
