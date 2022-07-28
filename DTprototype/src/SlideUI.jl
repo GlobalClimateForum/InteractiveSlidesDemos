@@ -177,7 +177,7 @@ end
 
 function iftitleslide(m_id::Int)
     titleslide_ids = findall(contains.([slide.HTMLattr[:class] for slide in slides[][m_id]], "titleslide"))
-    @iif("!$titleslide_ids.includes(current_id$m_id)")
+    isempty(titleslide_ids) ? "" : @iif("!$titleslide_ids.includes(current_id$m_id)")
 end
 
 function slide_id(m_id::Int) span("", @text(Symbol("current_id$m_id")), class = "slide_id") end
