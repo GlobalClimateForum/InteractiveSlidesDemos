@@ -1,15 +1,16 @@
 module SlideUI
-using Reexport
-@reexport using Stipple, StipplePlotly, StippleUI
+using Reexport, Mixers
+@reexport using Stipple, StippleUI
 
 const m_max = 4 #max number of monitors. Note: This setting does not really (yet) affect anything except error messages (the max number of monitors depends on the model fields which are hardcoded).
 
 #PresentationModels
 #region
-export get_or_create_pmodel, PresentationModel, reset_counters
+export @presentation!, get_or_create_pmodel, PresentationModel, reset_counters
 register_mixin(@__MODULE__)
 
-@reactive! struct PresentationModel <: ReactiveModel
+@mix Stipple.@with_kw struct presentation!
+    Stipple.@reactors #This line is from the definition of reactive! (Stipple.jl)
     counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :String => 1, :Int => 1, :Vector => 1, :PlotData => 1, 
     :PlotLayout => 1, :PlotConfig => 1, :DataTable => 1, :DataTablePagination => 1)
     num_slides::R{Int8} = 0
@@ -23,74 +24,9 @@ register_mixin(@__MODULE__)
     drawer2::R{Bool} = false
     drawer3::R{Bool} = false
     drawer4::R{Bool} = false
-    int1::R{Int} = 0
-    int2::R{Int} = 0
-    int3::R{Int} = 0
-    int4::R{Int} = 0
-    int5::R{Int} = 0
-    int6::R{Int} = 0
-    int7::R{Int} = 0
-    int8::R{Int} = 0
-    int9::R{Int} = 0
-    int10::R{Int} = 0
-    bool1::R{Bool} = false
-    bool2::R{Bool} = false
-    bool3::R{Bool} = false
-    bool4::R{Bool} = false
-    bool5::R{Bool} = false
-    bool6::R{Bool} = false
-    bool7::R{Bool} = false
-    bool8::R{Bool} = false
-    bool9::R{Bool} = false
-    bool10::R{Bool} = false
-    string1::R{String} = ""
-    string2::R{String} = ""
-    string3::R{String} = ""
-    string4::R{String} = ""
-    string5::R{String} = ""
-    string6::R{String} = ""
-    string7::R{String} = ""
-    string8::R{String} = ""
-    string9::R{String} = ""
-    string10::R{String} = ""
-    vector1::R{Vector} = []
-    vector2::R{Vector} = []
-    vector3::R{Vector} = []
-    vector4::R{Vector} = []
-    vector5::R{Vector} = []
-    vector6::R{Vector} = []
-    vector7::R{Vector} = []
-    vector8::R{Vector} = []
-    vector9::R{Vector} = []
-    vector10::R{Vector} = []
-    plotdata1::R{Vector{PlotData}} = [PlotData()]
-    plotdata2::R{Vector{PlotData}} = [PlotData()]
-    plotdata3::R{Vector{PlotData}} = [PlotData()]
-    plotdata4::R{Vector{PlotData}} = [PlotData()]
-    plotdata5::R{Vector{PlotData}} = [PlotData()]
-    plotlayout1::R{PlotLayout} = PlotLayout()
-    plotlayout2::R{PlotLayout} = PlotLayout()
-    plotlayout3::R{PlotLayout} = PlotLayout()
-    plotlayout4::R{PlotLayout} = PlotLayout()
-    plotlayout5::R{PlotLayout} = PlotLayout()
-    plotconfig1::R{PlotConfig} = PlotConfig()
-    plotconfig2::R{PlotConfig} = PlotConfig()
-    plotconfig3::R{PlotConfig} = PlotConfig()
-    plotconfig4::R{PlotConfig} = PlotConfig()
-    plotconfig5::R{PlotConfig} = PlotConfig()
-    datatable1::R{DataTable} = DataTable()
-    datatable2::R{DataTable} = DataTable()
-    datatable3::R{DataTable} = DataTable()
-    datatable4::R{DataTable} = DataTable()
-    datatable5::R{DataTable} = DataTable()
-    datatablepagination1::R{DataTablePagination} = DataTablePagination()
-    datatablepagination2::R{DataTablePagination} = DataTablePagination()
-    datatablepagination3::R{DataTablePagination} = DataTablePagination()
-    datatablepagination4::R{DataTablePagination} = DataTablePagination()
-    datatablepagination5::R{DataTablePagination} = DataTablePagination()
-end
+end  
 
-function create_pmodel()
+function create_pmodel(PresentationModel)
     println("Time to initialize model:")
     @time pmodel = Stipple.init(PresentationModel)
     on(pmodel.isready) do ready
@@ -101,19 +37,19 @@ function create_pmodel()
     return pmodel
 end
 
-let pmodel_ref = Ref{PresentationModel}() 
+let pmodel_ref = Ref{ReactiveModel}() 
     #https://discourse.julialang.org/t/how-to-correctly-define-and-use-global-variables-in-the-module-in-julia/65720/6?u=jochen2
     #https://stackoverflow.com/questions/24541723/does-julia-support-static-variables-with-function-scope
     global get_or_create_pmodel
-    function get_or_create_pmodel(; force_create = false::Bool)
+    function get_or_create_pmodel(PresentationModel; force_create = false::Bool)
         if !isassigned(pmodel_ref) || force_create
-            pmodel_ref[] = create_pmodel()
+            pmodel_ref[] = create_pmodel(PresentationModel)
         end
         pmodel_ref[]
     end
 end
 
-function reset_counters(pmodel::PresentationModel)
+function reset_counters(pmodel::ReactiveModel)
     for key in keys(pmodel.counters)
         pmodel.counters[key] = 1
     end
@@ -131,7 +67,7 @@ mutable struct ManagedField
     ref::Reactive
 end
 
-function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing)
+function new_field!(pmodel::ReactiveModel, type::Symbol; value = Nothing)
     name = lowercase(string(type, pmodel.counters[type]))
     name_sym = Symbol(name)
     if value != Nothing
@@ -141,7 +77,7 @@ function new_field!(pmodel::PresentationModel, type::Symbol; value = Nothing)
     return ManagedField(name, name_sym, getfield(pmodel, name_sym))::ManagedField
 end
 
-function new_multi_field!(pmodel::PresentationModel, type::Symbol, num_monitors::Int; value = Nothing)
+function new_multi_field!(pmodel::ReactiveModel, type::Symbol, num_monitors::Int; value = Nothing)
     [new_field!(pmodel, type; value) for i in 1:num_monitors]
 end
 
@@ -256,7 +192,7 @@ drawer(v__model = "drawer$m_id", [
     ]; side)
 end
 
-function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI::Function, settings::Dict, request_params::Dict{Symbol, Any})
+function ui(pmodel::ReactiveModel, create_slideshow::Function, create_auxUI::Function, settings::Dict, request_params::Dict{Symbol, Any})
     m_id = get(request_params, :monitor_id, 1)::Int
     !(0 < m_id <= m_max) && return "1 is the minimum monitor number, $m_max the maximum."
     m_id > settings[:num_monitors] && return "Only $(settings[:num_monitors]) monitors are active."
@@ -278,12 +214,12 @@ function ui(pmodel::PresentationModel, create_slideshow::Function, create_auxUI:
     ])
 end
 
-function serve_slideshow(request_params::Dict{Symbol, Any}, create_slideshow::Function, create_auxUI::Function, settings::Dict)
+function serve_slideshow(PresentationModel::DataType, create_slideshow::Function, create_auxUI::Function, settings::Dict, request_params::Dict{Symbol, Any})
     hardreset = get(request_params, :hardreset, "0") != "0"
     if hardreset
-        pmodel = get_or_create_pmodel(force_create = true)
+        pmodel = get_or_create_pmodel(PresentationModel; force_create = true)
     else
-        pmodel = get_or_create_pmodel()
+        pmodel = get_or_create_pmodel(PresentationModel)
     end
     println("Time to build UI:")
     if hardreset || get(request_params, :reset, "0") != "0"
