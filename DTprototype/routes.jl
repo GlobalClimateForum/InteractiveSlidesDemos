@@ -1,10 +1,14 @@
 println("Time to import Presentation:")
-@time using Presentation
+import Revise
+# Revise.track("src/Presentation.jl")
+@time include("public/templates/template1/Presentation.jl")
+using .Presentation
+Revise.track(Presentation)
 
-route("/") do
+Genie.route("/") do
     serve_slideshow(PresentationModel, create_slideshow, create_auxUI, settings, params())
 end
 
-route("/:monitor_id::Int/") do
+Genie.route("/:monitor_id::Int/") do
     serve_slideshow(PresentationModel, create_slideshow, create_auxUI, settings, params())
 end

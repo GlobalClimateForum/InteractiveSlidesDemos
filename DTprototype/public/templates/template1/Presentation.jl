@@ -1,6 +1,8 @@
 module Presentation
-using Reexport, StipplePlotly
-@reexport using SlideUI
+using Reexport, StipplePlotly, Revise
+include("../../../src/SlideUI.jl")
+@reexport using .SlideUI
+Revise.track(SlideUI)
 export PresentationModel, create_slideshow, create_auxUI, settings
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
