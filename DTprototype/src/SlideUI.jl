@@ -6,13 +6,12 @@ const m_max = 4 #max number of monitors. Note: This setting does not really (yet
 
 #PresentationModels
 #region
-export @presentation!, get_or_create_pmodel, PresentationModel, reset_counters
+export @presentation!, @addfields, get_or_create_pmodel, PresentationModel, reset_counters
 register_mixin(@__MODULE__)
 
 @mix Stipple.@with_kw struct presentation!
     Stipple.@reactors #This line is from the definition of reactive! (Stipple.jl)
-    counters::Dict{Symbol, Int8} = Dict(:Bool => 1, :String => 1, :Int => 1, :Vector => 1, :PlotData => 1, 
-    :PlotLayout => 1, :PlotConfig => 1, :DataTable => 1, :DataTablePagination => 1)
+    counters::Dict{String, Int8} = Dict()
     num_slides::R{Int8} = 0
     current_id0::R{Int8} = 1
     current_id1::R{Int8} = 1
@@ -24,7 +23,21 @@ register_mixin(@__MODULE__)
     drawer2::R{Bool} = false
     drawer3::R{Bool} = false
     drawer4::R{Bool} = false
-end  
+end
+
+function init_counters(pmodel::ReactiveModel) 
+end
+
+function to_fieldname(typename, id)
+    replace(lowercase(string(typename, id)), "{" => "", "}" => "")
+end
+
+macro addfields(num, type, init)
+    exprs = [esc(Expr(:(=), 
+                            Expr(:(::), Symbol(to_fieldname(type.args[1], i)), Meta.parse("R{$(type.args[1])}")),
+                 init)) for i = 1:num]
+    return Expr(:block, exprs...)
+end
 
 function create_pmodel(PresentationModel)
     println("Time to initialize model:")
@@ -49,16 +62,11 @@ let pmodel_ref = Ref{ReactiveModel}()
     end
 end
 
-function reset_counters(pmodel::ReactiveModel)
-    for key in keys(pmodel.counters)
-        pmodel.counters[key] = 1
-    end
-end
 #endregion
 
 #ModelManager
 #region
-export new_field!, new_multi_field!, new_handler, reset_handlers
+export new_field!, new_multi_field!, new_handler
 #this module should generate handlers and somehow populate fields for each pmodel (depending on slides), or expose functions/macros toward such ends
 
 mutable struct ManagedField
@@ -67,8 +75,8 @@ mutable struct ManagedField
     ref::Reactive
 end
 
-function new_field!(pmodel::ReactiveModel, type::Symbol; value = Nothing)
-    name = lowercase(string(type, pmodel.counters[type]))
+function new_field!(pmodel::ReactiveModel, type::String; value = Nothing)
+    name = to_fieldname(type, get!(pmodel.counters, type, 1))
     name_sym = Symbol(name)
     if value != Nothing
         getfield(pmodel, name_sym).o.val = value
@@ -77,7 +85,7 @@ function new_field!(pmodel::ReactiveModel, type::Symbol; value = Nothing)
     return ManagedField(name, name_sym, getfield(pmodel, name_sym))::ManagedField
 end
 
-function new_multi_field!(pmodel::ReactiveModel, type::Symbol, num_monitors::Int; value = Nothing)
+function new_multi_field!(pmodel::ReactiveModel, type::String, num_monitors::Int; value = Nothing)
     [new_field!(pmodel, type; value) for i in 1:num_monitors]
 end
 
@@ -122,7 +130,7 @@ end
 
 #SLIDE UI
 #region
-export serve_slideshow, slide, titleslide, iftitleslide, slide_id, navcontrols
+export serve_slideshow, slide, titleslide, iftitleslide, slide_id, navcontrols, menu
 
 struct Slide
     title::String
@@ -223,7 +231,7 @@ function serve_slideshow(PresentationModel::DataType, create_slideshow::Function
     end
     println("Time to build UI:")
     if hardreset || get(request_params, :reset, "0") != "0"
-        reset_counters(pmodel)
+        empty!(pmodel.counters)
         reset_handlers()
         pop!(Stipple.Layout.THEMES)
     end

@@ -5,71 +5,15 @@ const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
 
 @presentation! struct PresentationModel <: ReactiveModel
-    int1::R{Int} = 0
-    int2::R{Int} = 0
-    int3::R{Int} = 0
-    int4::R{Int} = 0
-    int5::R{Int} = 0
-    int6::R{Int} = 0
-    int7::R{Int} = 0
-    int8::R{Int} = 0
-    int9::R{Int} = 0
-    int10::R{Int} = 0
-    bool1::R{Bool} = false
-    bool2::R{Bool} = false
-    bool3::R{Bool} = false
-    bool4::R{Bool} = false
-    bool5::R{Bool} = false
-    bool6::R{Bool} = false
-    bool7::R{Bool} = false
-    bool8::R{Bool} = false
-    bool9::R{Bool} = false
-    bool10::R{Bool} = false
-    string1::R{String} = ""
-    string2::R{String} = ""
-    string3::R{String} = ""
-    string4::R{String} = ""
-    string5::R{String} = ""
-    string6::R{String} = ""
-    string7::R{String} = ""
-    string8::R{String} = ""
-    string9::R{String} = ""
-    string10::R{String} = ""
-    vector1::R{Vector} = []
-    vector2::R{Vector} = []
-    vector3::R{Vector} = []
-    vector4::R{Vector} = []
-    vector5::R{Vector} = []
-    vector6::R{Vector} = []
-    vector7::R{Vector} = []
-    vector8::R{Vector} = []
-    vector9::R{Vector} = []
-    vector10::R{Vector} = []
-    plotdata1::R{Vector{PlotData}} = [PlotData()]
-    plotdata2::R{Vector{PlotData}} = [PlotData()]
-    plotdata3::R{Vector{PlotData}} = [PlotData()]
-    plotdata4::R{Vector{PlotData}} = [PlotData()]
-    plotdata5::R{Vector{PlotData}} = [PlotData()]
-    plotlayout1::R{PlotLayout} = PlotLayout()
-    plotlayout2::R{PlotLayout} = PlotLayout()
-    plotlayout3::R{PlotLayout} = PlotLayout()
-    plotlayout4::R{PlotLayout} = PlotLayout()
-    plotlayout5::R{PlotLayout} = PlotLayout()
-    plotconfig1::R{PlotConfig} = PlotConfig()
-    plotconfig2::R{PlotConfig} = PlotConfig()
-    plotconfig3::R{PlotConfig} = PlotConfig()
-    plotconfig4::R{PlotConfig} = PlotConfig()
-    plotconfig5::R{PlotConfig} = PlotConfig()
-    datatable1::R{DataTable} = DataTable()
-    datatable2::R{DataTable} = DataTable()
-    datatable3::R{DataTable} = DataTable()
-    datatable4::R{DataTable} = DataTable()
-    datatable5::R{DataTable} = DataTable()
-    datatablepagination1::R{DataTablePagination} = DataTablePagination()
-    datatablepagination2::R{DataTablePagination} = DataTablePagination()
-    datatablepagination3::R{DataTablePagination} = DataTablePagination()
-    datatablepagination4::R{DataTablePagination} = DataTablePagination()
-    datatablepagination5::R{DataTablePagination} = DataTablePagination()
+    @addfields(10, ::Int, 0)
+    @addfields(10, ::Bool, false)
+    @addfields(10, ::String, "")
+    @addfields(10, ::Vector, [])
+    @addfields(2, ::PlotLayout, PlotLayout())
+    @addfields(2, ::PlotConfig, PlotConfig())
+    @addfields(2, ::DataTable, DataTable())
+    @addfields(2, ::DataTablePagination, DataTablePagination())
+    @addfields(5, ::Vector{PlotData}, [PlotData()])
 end
 
 const settings = Dict{Symbol, Any}(:folder => folder, :num_monitors => num_monitors()) #further possibility: :use_stipple_theme
@@ -93,13 +37,13 @@ pd(name) = PlotData(
 
 teamsdata = [pd(string("Dummy Team ", m_id)) for m_id in 1:num_m]
 
-show_bar = new_field!(pmodel, :Bool, value = 1)
-plot1data = new_field!(pmodel, :PlotData, value = teamsdata)
-plot2data = new_field!(pmodel, :PlotData, value = deepcopy(teamsdata))
-plotconfig = new_field!(pmodel, :PlotConfig)
-plotlayout = new_field!(pmodel, :PlotLayout)
-choice = new_multi_field!(pmodel, :Vector, num_m, value = ["Nothing"])
-possible_choices = new_field!(pmodel, :Vector, value = ["Nothing", "Increase", "Decrease", "Sine"])
+show_bar = new_field!(pmodel, "Bool", value = 1)
+plot1data = new_field!(pmodel, "VectorPlotData", value = teamsdata)
+plot2data = new_field!(pmodel, "VectorPlotData", value = deepcopy(teamsdata))
+plotconfig = new_field!(pmodel, "PlotConfig")
+plotlayout = new_field!(pmodel, "PlotLayout")
+choice = new_multi_field!(pmodel, "Vector", num_m, value = ["Nothing"])
+possible_choices = new_field!(pmodel, "Vector", value = ["Nothing", "Increase", "Decrease", "Sine"])
 
 #Handlers
 #region
