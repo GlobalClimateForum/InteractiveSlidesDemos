@@ -1,9 +1,5 @@
-module Presentation
-using Reexport, StipplePlotly, Revise
-include("../../../src/SlideUI.jl")
-@reexport using .SlideUI
-Revise.track(SlideUI)
-export PresentationModel, create_slideshow, create_auxUI, settings
+includet("../../../src/SlideUI.jl")
+using .SlideUI, StipplePlotly, Revise
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
@@ -172,4 +168,13 @@ row(class = "flex-center",
 )
 
 end
+
+Genie.route("/") do
+    serve_slideshow(PresentationModel, create_slideshow, create_auxUI, settings, params())
 end
+
+Genie.route("/:monitor_id::Int/") do
+    serve_slideshow(PresentationModel, create_slideshow, create_auxUI, settings, params())
+end
+
+Genie.up(8000, open_browser = true)
