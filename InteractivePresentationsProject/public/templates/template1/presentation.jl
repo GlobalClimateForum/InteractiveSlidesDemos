@@ -1,5 +1,4 @@
-includet("../../../src/SlideUI.jl")
-using .SlideUI, StipplePlotly
+using InteractivePresentations, StipplePlotly
 
 const folder = joinpath(splitpath(@__DIR__)[end-1:end])
 num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
