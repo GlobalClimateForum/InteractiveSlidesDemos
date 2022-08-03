@@ -1,2 +1,2 @@
 using Revise
-includet("public/templates/template1/Presentation.jl") #modify path accordingly
+includet("public/templates/template1/presentation.jl") #modify path accordingly
