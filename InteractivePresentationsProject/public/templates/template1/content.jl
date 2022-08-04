@@ -1,4 +1,4 @@
-function create_slideshow(pmodel::PresentationModel)
+function gen_content(pmodel::PresentationModel)
 num_m = num_monitors() #TODO: make num_m parameter of function (and of create_auxUI)
 
 pd(name) = PlotData(
