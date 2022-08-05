@@ -1,5 +1,5 @@
 function gen_content(pmodel::PresentationModel)
-num_m = num_monitors() #TODO: make num_m parameter of function (and of create_auxUI)
+num_m = num_monitors()
 
 pd(name) = PlotData(
     x = 1:12,
@@ -52,18 +52,13 @@ end
 #endregion
 
 @titleslide(
-"""<h1>Hello team m_id</h1>""", 
-    p("The pandemic exposed an unspoken truth. 
-    People were not less productive working from home; 
-    in fact, many got more work done. What gives? 
-    Well, subtract an hour of commute each way. 
-    Subtract another hour spent walking to grab coffee, snacks, and lunch.
-    Remove an hour here or there for all the collaboration that happened around the ping pong table or Xbox. 
-    Take out the stand-ups, check-ins, and meetings spent on chit-chat and vague ideas which, ya know, could have been an email.")
+"""<h1>Hello team m_id</h1>, 
+   <p>You can directly write html strings, though generally it is recommended 
+   to use the functions supplied by Genie, Stipple and StippleUI (see code for the other slides).</p>""", 
 )
 
 @slide(
-    h1("Decision slide"),
+    h1("Decision time"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
     select(choice[:m_id], options = possible_choices.sym); size = 2

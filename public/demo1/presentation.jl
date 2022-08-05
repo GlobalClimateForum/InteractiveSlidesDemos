@@ -1,6 +1,6 @@
 using InteractiveSlides, StipplePlotly
 
-const folder = joinpath(splitpath(@__DIR__)[end-1:end])
+const folder = splitpath(@__DIR__)[end]
 num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
 
 @presentation! struct PresentationModel <: ReactiveModel
@@ -20,7 +20,7 @@ const settings = Dict{Symbol, Any}(
     :num_monitors => num_monitors(),
     :use_Stipple_theme => false)
 
-function gen_auxUI(m_id::Int) #This is not returned by create_slideshow because it needs to be generated for each monitor every request (as is)
+function gen_auxUI(m_id::Int)
     [quasar(:header, quasar(:toolbar, navcontrols(m_id)))
     quasar(:footer, [quasar(:separator), quasar(:toolbar, 
         [space(), slide_id(m_id)])],
