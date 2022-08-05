@@ -15,7 +15,10 @@ num_monitors() = 2 #as a function so it can be changed without having to restart
     @addfields(5, ::Vector{PlotData}, [PlotData()])
 end
 
-const settings = Dict{Symbol, Any}(:folder => folder, :num_monitors => num_monitors()) #further possibility: :use_stipple_theme
+const settings = Dict{Symbol, Any}(
+    :folder => folder, 
+    :num_monitors => num_monitors(),
+    :use_Stipple_theme => false)
 
 function gen_auxUI(m_id::Int) #This is not returned by create_slideshow because it needs to be generated for each monitor every request (as is)
     [quasar(:header, quasar(:toolbar, navcontrols(m_id)))

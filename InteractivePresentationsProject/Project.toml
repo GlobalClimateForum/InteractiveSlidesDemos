@@ -1,7 +1,7 @@
 name = "InteractivePresentationsProject"
 uuid = "2b376672-ff9d-493f-8f76-e07e9f28ae8e"
 authors = ["Jochen Krattenmacher"]
-version = "0.8.3"
+version = "0.8.4"
 
 [compat]
 InteractivePresentations = "^0.8.3"
