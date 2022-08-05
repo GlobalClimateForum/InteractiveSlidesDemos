@@ -1,4 +1,4 @@
-module InteractivePresentationsProject
+module InteractiveSlidesDemos
 
 using Genie
 

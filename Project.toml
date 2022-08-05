@@ -1,4 +1,27 @@
+name = "InteractiveSlidesDemos"
+uuid = "2b376672-ff9d-493f-8f76-e07e9f28ae8e"
+authors = ["Jochen Krattenmacher"]
+version = "0.9"
+
+[compat]
+InteractiveSlides = "0.9"
+
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+Inflector = "6d011eab-0732-4556-8808-e463c76bf3b6"
+InteractiveSlides = "e0adfb67-6a19-4170-8314-b8ef321cb235"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+MbedTLS = "739be429-bea8-5141-9913-cc70e7f3736d"
+Mixers = "2a8e4939-dab8-5edc-8f64-72a8776f13de"
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Stipple = "4acbeb90-81a0-11ea-1966-bdaff8155998"
 StipplePlotly = "ec984513-233d-481d-95b0-a3b58b97af2b"
 StippleUI = "a3c5d34a-b254-4859-a8fa-b86abb7e84a3"
