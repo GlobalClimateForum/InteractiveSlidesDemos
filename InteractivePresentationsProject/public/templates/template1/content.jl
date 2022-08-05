@@ -10,13 +10,13 @@ pd(name) = PlotData(
 
 teamsdata = [pd(string("Dummy Team ", m_id)) for m_id in 1:num_m]
 
-show_bar = new_field!(pmodel, "Bool", value = 1)
-plot1data = new_field!(pmodel, "VectorPlotData", value = teamsdata)
-plot2data = new_field!(pmodel, "VectorPlotData", value = deepcopy(teamsdata))
-plotconfig = new_field!(pmodel, "PlotConfig")
-plotlayout = new_field!(pmodel, "PlotLayout")
-choice = new_multi_field!(pmodel, "Vector", num_m, value = ["Nothing"])
-possible_choices = new_field!(pmodel, "Vector", value = ["Nothing", "Increase", "Decrease", "Sine"])
+show_bar = @new_field!("Bool", value = 1)
+plot1data = @new_field!("VectorPlotData", value = teamsdata)
+plot2data = @new_field!("VectorPlotData", value = deepcopy(teamsdata))
+plotconfig = @new_field!("PlotConfig")
+plotlayout = @new_field!("PlotLayout")
+choice = @new_multi_field!("Vector", value = ["Nothing"])
+possible_choices = @new_field!("Vector", value = ["Nothing", "Increase", "Decrease", "Sine"])
 
 #Handlers
 #region
@@ -51,7 +51,7 @@ end
 
 #endregion
 
-titleslide(num_m,
+@titleslide(
 """<h1>Hello team m_id</h1>""", 
     p("The pandemic exposed an unspoken truth. 
     People were not less productive working from home; 
@@ -62,7 +62,7 @@ titleslide(num_m,
     Take out the stand-ups, check-ins, and meetings spent on chit-chat and vague ideas which, ya know, could have been an email.")
 )
 
-slide(num_m,
+@slide(
     h1("Decision slide"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
@@ -70,7 +70,7 @@ slide(num_m,
     )),
 )
 
-slide(num_m,
+@slide(
     h1("Plot slide"),
 row(class = "q-col-gutter-sm", [
 cell([
