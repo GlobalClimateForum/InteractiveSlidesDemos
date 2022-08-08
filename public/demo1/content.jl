@@ -1,6 +1,7 @@
 function gen_content(monitor_id::Int, pmodel::PresentationModel, init::Bool)
 num_m = num_monitors()
 slides = Slide[]
+####### custom code goes below ######
 
 pd(name) = PlotData(
     x = 1:12,
@@ -11,13 +12,13 @@ pd(name) = PlotData(
 
 teamsdata = [pd(string("Dummy Team ", m_id)) for m_id in 1:num_m]
 
-show_bar = @new_field!("Bool", value = 1)
-plot1data = @new_field!("VectorPlotData", value = teamsdata)
-plot2data = @new_field!("VectorPlotData", value = deepcopy(teamsdata))
+show_bar = @new_field!("Bool", init_val = 1)
+plot1data = @new_field!("VectorPlotData", init_val = teamsdata)
+plot2data = @new_field!("VectorPlotData", init_val = deepcopy(teamsdata))
 plotconfig = @new_field!("PlotConfig")
 plotlayout = @new_field!("PlotLayout")
-choice = @new_multi_field!("Vector", value = ["Nothing"])
-possible_choices = @new_field!("Vector", value = ["Nothing", "Increase", "Decrease", "Sine"])
+choice = @new_multi_field!("Vector", init_val = ["Nothing"])
+possible_choices = @new_field!("Vector", init_val = ["Nothing", "Increase", "Decrease", "Sine"])
 
 if init #Handlers
 new_handler(show_bar) do val
