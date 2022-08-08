@@ -1,5 +1,6 @@
-function gen_content(pmodel::PresentationModel)
+function gen_content(monitor_id::Int, pmodel::PresentationModel, init::Bool)
 num_m = num_monitors()
+slides = Slide[]
 
 pd(name) = PlotData(
     x = 1:12,
@@ -18,8 +19,7 @@ plotlayout = @new_field!("PlotLayout")
 choice = @new_multi_field!("Vector", value = ["Nothing"])
 possible_choices = @new_field!("Vector", value = ["Nothing", "Increase", "Decrease", "Sine"])
 
-#Handlers
-#region
+if init #Handlers
 new_handler(show_bar) do val
     println(string("show bar = ", show_bar.ref[]))
     if val == 1
@@ -48,11 +48,10 @@ for m_id in 1:num_m
         notify(plot2data.ref)
     end
 end
-
-#endregion
+end
 
 @titleslide(
-"""<h1>Hello team m_id</h1>, 
+"""<h1>Hello team $monitor_id</h1> 
    <p>You can directly write html strings, though generally it is recommended 
    to use the functions supplied by Genie, Stipple and StippleUI (see code for the other slides).</p>""", 
 )
@@ -61,7 +60,7 @@ end
     h1("Decision time"),
     row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
-    select(choice[:m_id], options = possible_choices.sym); size = 2
+    select(choice[monitor_id].sym, options = possible_choices.sym); size = 2
     )),
 )
 
@@ -79,4 +78,10 @@ row(class = "flex-center",
     ]),
 )
 
+auxUI = [quasar(:header, quasar(:toolbar, navcontrols(monitor_id))),
+        quasar(:footer, [quasar(:separator), quasar(:toolbar, 
+        [space(), slide_id(monitor_id)])], iftitleslide(slides, monitor_id)),
+        menu_slides(slides, monitor_id, (id, title) -> string(id) * ": " * title)]
+
+return slides, auxUI
 end

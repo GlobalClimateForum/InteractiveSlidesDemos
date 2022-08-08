@@ -20,16 +20,8 @@ const settings = Dict{Symbol, Any}(
     :num_monitors => num_monitors(),
     :use_Stipple_theme => false)
 
-function gen_auxUI(m_id::Int)
-    [quasar(:header, quasar(:toolbar, navcontrols(m_id)))
-    quasar(:footer, [quasar(:separator), quasar(:toolbar, 
-        [space(), slide_id(m_id)])],
-        iftitleslide(m_id))
-    menu_slides(m_id, (id, title) -> string(id) * ": " * title)]
-end
-
 includet("./content.jl")
 
-serve_presentation(PresentationModel, gen_content, gen_auxUI, settings)
+serve_presentation(PresentationModel, gen_content, settings)
 
 Genie.up(8000, open_browser = true)
