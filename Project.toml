@@ -4,7 +4,7 @@ authors = ["Jochen Krattenmacher"]
 version = "0.11.0"
 
 [compat]
-InteractiveSlides = "0.11"
+InteractiveSlides = "0.12"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"

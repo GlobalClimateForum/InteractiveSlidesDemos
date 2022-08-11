@@ -1,7 +1,7 @@
 using InteractiveSlides, StipplePlotly
 
 const folder = splitpath(@__DIR__)[end]
-num_monitors() = 2 #as a function so it can be changed without having to restart Julia session
+num_teams = 2 #requires passing reset=1 as URL argument upon change
 
 @presentation! struct PresentationModel <: ReactiveModel
     @addfields(10, ::Int, 0)
@@ -17,7 +17,7 @@ end
 
 const settings = Dict{Symbol, Any}(
     :folder => folder, 
-    :num_monitors => num_monitors(),
+    :num_teams => num_teams,
     :use_Stipple_theme => false)
 
 includet("./content.jl")
