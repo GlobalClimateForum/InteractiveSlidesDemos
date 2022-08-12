@@ -1,5 +1,6 @@
 function gen_content(team_id::Int, pmodel::PresentationModel, init::Bool)
 slides = Slide[]
+num_teams = settings[:num_teams] #requires passing reset=1 as URL argument upon change in settings
 ####### custom code goes below ######
 
 feedback = @new_field!("String")

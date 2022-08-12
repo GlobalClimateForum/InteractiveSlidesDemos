@@ -1,5 +1,6 @@
 function gen_content(team_id::Int, pmodel::PresentationModel, init::Bool)
 slides = Slide[]
+num_teams = settings[:num_teams] #requires passing reset=1 as URL argument upon change in settings
 ####### custom code goes below ######
 
 pd(name) = PlotData(
@@ -58,7 +59,7 @@ end
 
 @slide(
     h1("Decision time"),
-    row(class = "flex-center", img(src = "$folder/img/samplepic.jpg")),
+    row(class = "flex-center", img(src = "img/samplepic.jpg")),
     row(class = "flex-center", cell(class = "col-2",
     select(choice[team_id].sym, options = possible_choices.sym); size = 2
     )),

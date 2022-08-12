@@ -3,7 +3,10 @@ import DataFrames.DataFrame
 
 using InteractiveSlides, StipplePlotly
 
-num_teams = 2 #requires passing reset=1 as URL argument upon change
+num_teams_foo() = 2 #as function so it can be changed during julia session
+const settings = Dict{Symbol, Any}(
+    :num_teams => num_teams_foo(),
+    :use_Stipple_theme => false)
 
 @presentation! struct PresentationModel <: ReactiveModel
     @addfields(10, ::Int, 0)
@@ -17,11 +20,7 @@ num_teams = 2 #requires passing reset=1 as URL argument upon change
     @addfields(5, ::Vector{PlotData}, [PlotData()])
 end
 
-const settings = Dict{Symbol, Any}(
-    :num_teams => num_teams,
-    :use_Stipple_theme => false)
-
-includet("./longer_slideshow.jl")
+includet("./short_slideshow.jl") #changing file requires restart of julia session
 
 serve_presentation(PresentationModel, gen_content, settings)
 
