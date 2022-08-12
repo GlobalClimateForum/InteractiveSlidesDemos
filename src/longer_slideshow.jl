@@ -3,23 +3,23 @@ slides = Slide[]
 num_teams = settings[:num_teams] #requires passing reset=1 as URL argument upon change in settings
 ####### custom code goes below ######
 
-feedback = @new_field!("String")
+feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
 
-event1_choices = @new_multi_field!("String", init_val = "moderate")
-event2_choices = @new_multi_field!("Bool", init_val = false)
-investment_choices = @new_multi_field!("Vector", init_val = [])
+event1_choices = @use_fields!("String", init_val = "moderate")
+event2_choices = @use_fields!("Bool", init_val = false)
+investment_choices = @use_fields!("Vector", init_val = [])
 available_invest_choices = ["Investment A", "Investment B", "Investment C"]
-available_invest_choices_field = @new_field!("Vector", init_val = available_invest_choices)
+available_invest_choices_field = @use_field!("Vector", init_val = available_invest_choices)
 row_names = OrderedDict(:Choices => append!(["Event 1", "Event 2"], available_invest_choices))
 df = DataFrame(;merge(row_names,OrderedDict((Symbol("Team $t_id")=>["", "", "", "", ""] for t_id = team_ids)...))...)
-choices_table = @new_field!("DataTable", init_val = DataTable(df))
+choices_table = @use_field!("DataTable", init_val = DataTable(df))
 
 data = Dict{String, Vector{Float64}}("little" => [17.85, 13.76], "moderate" => [24.8, 20.59], "high" => [33.02, 28.67])
-plotdata = @new_field!("VectorPlotData", 
+plotdata = @use_field!("VectorPlotData", 
                     init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["", "", "", ""], textposition = "outside")])
-plotconfig = @new_field!("PlotConfig")
-plotlayout = @new_field!("PlotLayout", init_val = PlotLayout(
+plotconfig = @use_field!("PlotConfig")
+plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(
     height = 600,
     font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"),
     yaxis = [PlotLayoutAxis(tickprefix = "+", xy = "y", range = [0.0, 38.0], nticks = 4)],
