@@ -1,0 +1,158 @@
+/*#region hide unwanted elements */
+
+th:first-child { /* hides top left column heading of table */
+    color: var(--q-color-white);
+}
+
+.modebar { /* hides modebar by StipplePlotly */
+    visibility: hidden;
+}
+/*#endregion*/
+
+/*#region hacks */
+
+.slide, .titleslide {
+    height: 1px; /* https://stackoverflow.com/questions/8468066/child-inside-parent-with-min-height-100-not-inheriting-height */
+}
+/*#endregion*/
+
+/*#region main colors */
+
+:root {
+    --q-color-primary: #184688;
+    --q-color-secondary: #8fb6d6;
+    --q-color-dark: #868686;
+    --q-color-info: #373b44;
+    --q-color-positive: #72c8a9;
+    --q-color-negative: #bd5631;
+    --q-color-accent: #9c27b0;
+    --q-color-warning: #f2c037;
+    --q-color-white: white;
+    --q-color-black: rgb(31, 31, 31);
+}
+
+body {
+    color:var(--q-color-black);
+    background-color: var(--q-color-white);
+}
+/*#endregion*/
+
+/*#region sizes, fonts and positioning */
+
+html {
+    font-size: 2.5vw;
+}
+
+.titleslide h1 {
+    font-size: 3rem;
+    line-height: 3rem;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Helvetica, sans-serif, Arial;
+    margin-top: 0;
+    margin-bottom: 0.1rem;
+}
+
+h1 {
+    font-size: 1.75rem;
+    line-height: 1.75rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+    line-height: 1.4rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: 0 10vw;
+}
+
+.titleslide {
+    padding: 5vmin;
+}
+
+body, p, header, ul, ol {
+    font-size: 1rem;
+}
+
+footer {
+    font-size: 0.5rem;
+}
+
+img {
+    max-width: 95%;
+    max-height: 95%;
+}
+/*#endregion*/
+
+/*#region breakpoint behavior */
+
+@media screen and (max-width: 1600px) and (min-width: 1000px) {
+    html {
+    font-size: 40px;
+  }
+  .titleslide h1 {
+    font-size: 2rem;
+    line-height: 2rem
+  }
+}
+
+@media screen and (max-width: 1000px) and (min-width: 600px) {
+  .shrinkfast {
+    font-size: 30px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+    html {
+    font-size: 25px;
+  }
+  .titleslide h1 {
+    font-size: 2rem;
+    line-height: 2rem
+  }
+  .absolute-center {
+    position:static;
+    transform: none;
+  }
+  img.absolute-center {
+    max-width: 100%;
+  }
+}
+/*#endregion*/
+
+/*#region Quasar/StippleUI (these settings have no unless these packages are being used) */
+
+.q-separator {
+    height: 3px;
+    stroke-width: 20px;
+}
+
+.q-separator, .q-table td:hover {
+    background-color: var(--q-color-secondary);
+}
+
+.q-layout__section--marginal {
+    color: var(--q-color-dark);
+    background-color: var(--q-color-white);
+}
+
+.q-list {
+    font-size: 0.5rem;
+}
+
+.q-item__label {
+    text-align: center;
+}
+
+.q-field__native { /* for (select) input field */
+    justify-content:center;
+    font-size: 1rem;
+}
+
+.q-table tbody td, .q-table th { /* for datatable */
+    font-size: 0.57rem;
+}
+/*#endregion*/
