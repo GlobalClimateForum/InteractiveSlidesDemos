@@ -54,7 +54,8 @@ end
 )
 
 @slide(
-    h1("Plot slide"),
+    h1("Results"),
+    row(class = "flex-center", p("Each team's bar plot depends on the choice the team made in the previous slide.")),
     plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym),
 )
 
