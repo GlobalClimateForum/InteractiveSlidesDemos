@@ -1,6 +1,7 @@
-function gen_content(team_id::Int, pmodel::PresentationModel, init::Bool)
+function gen_content(pmodel::PresentationModel, params::Dict)
 slides = Slide[]
-num_teams = settings[:num_teams] #requires passing reset=1 as URL argument upon change in settings
+num_teams = params[:num_teams] #requires passing reset=1 as URL argument upon change in settings
+team_id = params[:team_id]::Int
 ####### custom code goes below ######
 
 feedback = @use_field!("String", init_val = "")
@@ -39,7 +40,7 @@ function handler_helper(t_id)
     notify(plotlayout.ref)
 end
 
-if init #Handlers
+if params[:init] #Handlers
 for t_id in team_ids
     new_handler(getfield(pmodel, Symbol("current_id", t_id))) do id
         if id == pmodel.num_slides[]

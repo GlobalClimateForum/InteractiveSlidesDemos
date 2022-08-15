@@ -1,6 +1,7 @@
-function gen_content(team_id::Int, pmodel::PresentationModel, init::Bool)
+function gen_content(pmodel::PresentationModel, params::Dict)
 slides = Slide[]
-num_teams = settings[:num_teams] #requires passing reset=1 as URL argument upon change in settings
+num_teams = params[:num_teams] #requires passing reset=1 as URL argument upon change in settings
+team_id = params[:team_id]::Int
 ####### custom code goes below ######
 
 pd(name) = PlotData(
@@ -18,7 +19,7 @@ plotlayout = @use_field!("PlotLayout")
 choice = @use_fields!("Vector", init_val = ["Nothing"])
 possible_choices = @use_field!("Vector", init_val = ["Nothing", "Increase", "Decrease", "Sine"])
 
-if init #Handlers
+if params[:init] #Handlers
 for t_id in 1:num_teams
     new_handler(choice[t_id]) do choice
         y = teamsdata[t_id].y
