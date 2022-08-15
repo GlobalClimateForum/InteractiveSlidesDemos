@@ -153,13 +153,13 @@ end
     h2("""Thaanks (your input has been saved in folder "out")!""", class = "absolute-center"), 
 )
 
-auxUI = [quasar(:header, quasar(:toolbar, navcontrols(team_id))),
+auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
 
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
         [img(src = "img/logo.png", style = "max-height:1rem"), space(), 
-        span("InteractiveSlides.jl in action"), space(), slide_id(team_id)])], iftitleslide(slides, team_id)),
+        span("InteractiveSlides.jl in action"), space(), slide_id(params)])], iftitleslide(slides, params)),
 
-        menu_slides(slides, team_id, (id, title) -> string(id) * ": " * title)]
+        menu_slides(slides, params, (id, title) -> string(id) * ": " * title)]
 
 return slides, auxUI
 

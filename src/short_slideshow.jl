@@ -58,10 +58,10 @@ end
     plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym),
 )
 
-auxUI = [quasar(:header, quasar(:toolbar, navcontrols(team_id))),
+auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
-        [space(), slide_id(team_id)])], iftitleslide(slides, team_id)),
-        menu_slides(slides, team_id, (id, title) -> string(id) * ": " * title)]
+        [space(), slide_id(params)])], iftitleslide(slides, params)),
+        menu_slides(slides, params, (id, title) -> string(id) * ": " * title)]
 
 return slides, auxUI
 end
