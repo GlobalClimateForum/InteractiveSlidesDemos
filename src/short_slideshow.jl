@@ -57,6 +57,8 @@ end
     h1("Results"),
     row(class = "flex-center", p("Each team's bar plot depends on the choice the team made in the previous slide.")),
     plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym),
+    params[:is_controller] ? row(p("Here's some info which can only be seen by the controller (speaker). 
+                                    This view can be accessed e.g. by passing ?ctrl=1 as an URL parameter"), style = "color:red") : "",
 )
 
 auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
