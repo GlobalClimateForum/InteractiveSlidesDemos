@@ -75,7 +75,7 @@ end
 @titleslide(
     h1("InteractiveSlides.jl in Action"), 
     p("""Hello team $team_id (you can switch to team 2 by visiting 
-    <a href="http://127.0.0.1:8080/2">http://127.0.0.1:8080/2</a>)."""),
+    <a href="2">here</a>)."""),
 )
 
 @slide(
