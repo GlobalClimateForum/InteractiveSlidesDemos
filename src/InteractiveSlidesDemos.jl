@@ -3,9 +3,8 @@ import DataFrames.DataFrame
 
 using InteractiveSlides, StipplePlotly
 
-num_teams_foo() = 2 #as function so it can be changed during julia session
 const settings = Dict{Symbol, Any}(
-    :num_teams => num_teams_foo(),
+    :num_teams_default => 2,
     :use_Stipple_theme => false)
 
 @presentation! struct PresentationModel <: ReactiveModel
