@@ -65,8 +65,12 @@ h2 {
     line-height: 1.4rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
+.slide :is(h1, h2, h3, h4, h5, h6) {
     padding: 0 10vw;
+}
+
+.settings-page, .landing-page {
+    text-align: center;
 }
 
 .titleslide {
@@ -139,8 +143,8 @@ img {
     background-color: var(--q-color-white);
 }
 
-.q-list {
-    font-size: 0.5rem;
+.q-drawer .q-list {
+    font-size: 0.65rem;
 }
 
 .q-item__label {
