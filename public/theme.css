@@ -1,5 +1,9 @@
 /*#region hide unwanted elements */
 
+[v-cloak] {
+    display: none;
+  }
+
 th:first-child { /* hides top left column heading of table */
     color: var(--q-color-white);
 }
