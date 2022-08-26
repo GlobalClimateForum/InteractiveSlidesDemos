@@ -1,6 +1,6 @@
 function gen_content(pmodel::PresentationModel, params::Dict)
 slides = Slide[]
-num_teams = params[:num_teams] #requires passing reset=1 as URL argument upon change in settings
+num_teams = pmodel.num_teams[]
 team_id = params[:team_id]::Int
 ####### custom code goes below ######
 
@@ -74,8 +74,7 @@ end
 #region
 @titleslide(
     h1("InteractiveSlides.jl in Action"), 
-    p("""Hello team $team_id (you can switch to team 2 by visiting 
-    <a href="2">here</a>)."""),
+    p("Let's go."),
 )
 
 @slide(

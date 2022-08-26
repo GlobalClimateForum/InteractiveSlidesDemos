@@ -3,10 +3,6 @@ import DataFrames.DataFrame
 
 using InteractiveSlides, StipplePlotly
 
-const settings = Dict{Symbol, Any}(
-    :num_teams_default => 2,
-    :use_Stipple_theme => false)
-
 @presentation! struct PresentationModel <: ReactiveModel
     @addfields(10, ::Int, 0)
     @addfields(10, ::Bool, false)
@@ -19,8 +15,8 @@ const settings = Dict{Symbol, Any}(
     @addfields(5, ::Vector{PlotData}, [PlotData()])
 end
 
-includet("./short_slideshow.jl") #changing file requires restart of julia session
+includet("./short_slideshow.jl") #changing file to longer_slideshow.jl requires restart of julia session
 
-serve_presentation(PresentationModel, gen_content, settings)
+serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
 
 Genie.up(8080, open_browser = true)
