@@ -6,7 +6,7 @@ team_id = params[:team_id]::Int
 
 pd(name) = PlotData(
     x = 1:12,
-    y = (1:12)/5,
+    y = ones(12),
     name = name,
     plot = "bar",
 )
@@ -16,8 +16,8 @@ teamsdata = [pd(string("Dummy Team ", t_id)) for t_id in 1:num_teams]
 plotdata = @use_field!("VectorPlotData", init_val = deepcopy(teamsdata))
 plotconfig = @use_field!("PlotConfig")
 plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"),))
-choice = @use_fields!("Vector", init_val = ["Nothing"])
-possible_choices = @use_field!("Vector", init_val = ["Nothing", "Increase", "Decrease", "Sine"])
+choice = @use_fields!("Vector", init_val = ["No change"])
+possible_choices = @use_field!("Vector", init_val = ["No change", "Increase", "Decrease", "Sine"])
 
 if params[:init] #Handlers
 for t_id in 1:num_teams
@@ -25,11 +25,11 @@ for t_id in 1:num_teams
         y = teamsdata[t_id].y
         x = 1:12
         if choice == ["Increase"]
-            y += x./12
+            y = x./12
         elseif choice == ["Decrease"]
-            y -= x./12
+            y = 1 .- (x./12)
         elseif choice == ["Sine"]
-            y += sin.(x.*pi./6)
+            y = sin.(x.*pi./6)
         end
         plotdata.ref[t_id].y = y
         notify(plotdata.ref)
