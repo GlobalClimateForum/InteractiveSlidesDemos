@@ -46,7 +46,7 @@ end
 
 @slide(
     h1("Decision time"),
-    row(class = "flex-center", img(src = "img/samplepic.jpg")),
+    row(class = "flex-center", img(src = "img/choice.png")),
     row(class = "flex-center", cell(class = "col-2",
     select(choice[team_id].sym, options = possible_choices.sym); size = 2)),
     h2("Good choice!", @appear_on(2)),
