@@ -39,6 +39,11 @@ body {
     color:var(--q-color-black);
     background-color: var(--q-color-white);
 }
+
+.current {
+    background-color: var(--q-color-secondary);
+}
+
 /*#endregion*/
 
 /*#region sizes, fonts and positioning */
