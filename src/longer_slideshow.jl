@@ -78,13 +78,13 @@ end
 )
 
 @slide(
-    h1("List with picture"), 
+    h1("List with picture which only shows for wide screens (Try resizing the window)"), 
     row(class = "items-center justify-evenly",
     [simplelist(
             "Point A", "<br>",
             "Point B", simplelist("Subpoint B1", "Subpoint B2"), "<br>",
             "Point C", simplelist("Subpoint C1", "Subpoint C2")), 
-            autocell(img(src = "img/samplepic.jpg", style = "max-width: 25vmax", class = "gt-sm"))]
+            autocell(img(src = "img/samplepic.jpg", style = "max-width: 45vmax", class = "gt-sm"))]
     )
 )
 
@@ -93,9 +93,9 @@ end
     title = "Easily copy slides from powerpoint"
 )
 
-@slide(
-    h1("In this slide the image is centered (try resizing the window)"), 
-    img(src = "img/samplepic.jpg", style = "max-height: 60vh;", class = "absolute-center")
+@simpleslide("This is a simple slide with a heading and centered content", 
+    ["(try resizing the window)", img(src = "img/samplepic.jpg", style = "max-height: 60vh")],
+    title = "Simple slide"
 )
 #endregion
 

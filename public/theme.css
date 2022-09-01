@@ -95,8 +95,8 @@ footer {
 }
 
 img {
-    max-width: 95%;
-    max-height: 95%;
+    max-width: 100vw;
+    max-height: 100vh;
 }
 /*#endregion*/
 
@@ -125,13 +125,6 @@ img {
   .titleslide h1 {
     font-size: 2rem;
     line-height: 2rem
-  }
-  .absolute-center {
-    position:static;
-    transform: none;
-  }
-  img.absolute-center {
-    max-width: 100%;
   }
 }
 /*#endregion*/
