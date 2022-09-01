@@ -57,7 +57,7 @@ for t_id in team_ids
         handler_helper(t_id)
     end
     new_handler(event2_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][2] = choice ? "Change" : "Business as usual"
+        choices_table.ref.data[!, t_id+1][2] = choice ? "yes" : "no"
         handler_helper(t_id)
     end
     new_handler(investment_choices[t_id]) do choices
@@ -89,7 +89,8 @@ end
 )
 
 @slide(
-    img(src = "img/powerpoint_slide.png", style = "height: 100%;"), prepend_class = "text-center"
+    img(src = "img/powerpoint_slide.png", style = "height: 100%;"), prepend_class = "text-center",
+    title = "Easily copy slides from powerpoint"
 )
 
 @slide(
@@ -150,6 +151,7 @@ end
 
 @slide(
     h2("""Thaanks (your input has been saved in folder "out")!""", class = "absolute-center"), 
+    title = "Thanks"
 )
 
 auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
