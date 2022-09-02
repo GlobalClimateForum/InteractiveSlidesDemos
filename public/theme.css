@@ -1,7 +1,7 @@
 /*#region hide unwanted elements */
 
-[v-cloak] {
-    display: none;
+[v-cloak] { /* https://v2.vuejs.org/v2/api/#v-cloak */ 
+    display: none; /* hides items during loading of page */
   }
 
 th:first-child { /* hides top left column heading of table */
@@ -10,13 +10,6 @@ th:first-child { /* hides top left column heading of table */
 
 .modebar { /* hides modebar by StipplePlotly */
     visibility: hidden;
-}
-/*#endregion*/
-
-/*#region hacks */
-
-.slide, .titleslide {
-    height: 1px; /* https://stackoverflow.com/questions/8468066/child-inside-parent-with-min-height-100-not-inheriting-height */
 }
 /*#endregion*/
 
@@ -52,6 +45,10 @@ html {
     font-size: 2.5vw;
 }
 
+.slide :is(h1, h2, h3, h4, h5, h6) {
+    padding: 0 10vw;
+}
+
 .titleslide h1 {
     font-size: 3rem;
     line-height: 3rem;
@@ -72,10 +69,6 @@ h1 {
 h2 {
     font-size: 1.4rem;
     line-height: 1.4rem;
-}
-
-.slide :is(h1, h2, h3, h4, h5, h6) {
-    padding: 0 10vw;
 }
 
 .settings-page, .landing-page {
@@ -113,7 +106,7 @@ img {
 }
 
 @media screen and (max-width: 1000px) and (min-width: 600px) {
-  .shrinkfast {
+    html {
     font-size: 30px;
   }
 }

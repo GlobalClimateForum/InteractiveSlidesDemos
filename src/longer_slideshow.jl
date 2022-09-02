@@ -3,6 +3,7 @@ slides = Slide[]
 num_teams = pmodel.num_teams[]
 team_id = params[:team_id]::Int
 ####### custom code goes below ######
+row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwargs...)
 
 feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
@@ -89,12 +90,12 @@ end
 )
 
 @slide(
-    img(src = "img/powerpoint_slide.png", style = "height: 100%;"), prepend_class = "text-center",
+    img(src = "img/powerpoint_slide.png", style = "height: 100%;"), class = "text-center",
     title = "Easily copy slides from powerpoint"
 )
 
-@simpleslide("This is a simple slide with a heading and centered content", 
-    ["(try resizing the window)", img(src = "img/samplepic.jpg", style = "max-height: 60vh")],
+@simpleslide(h1("This slide has vertically centered content"), 
+    "(try resizing the window)", img(src = "img/samplepic.jpg", style = "max-height: 60vh"),
     title = "Simple slide"
 )
 #endregion
@@ -102,23 +103,22 @@ end
 @slide(
     h1("Choose wisely!"), 
     spacer("2vw"),
-    row(class = "flex-center",
-    [span("Event 1: "), radio("little", event1_choices[team_id].sym, val = "little"),
+    row_c([span("Event 1: "), radio("little", event1_choices[team_id].sym, val = "little"),
     radio("moderate", event1_choices[team_id].sym, val = "moderate"),
-    radio("high", event1_choices[team_id].sym, val = "high"),
-    ]),
-    row(class = "flex-center",
+    radio("high", event1_choices[team_id].sym, val = "high")]),
+    row_c(
     [span("Event 2:"), toggle("Yes?", event2_choices[team_id].sym),
     ]),
     spacer("2vw"),
-    row(class = "flex-center", p("Investments (pick 2):")), 
-    cell(select(investment_choices[team_id].sym, options = available_invest_choices_field.sym, multiple = true, maxvalues = 2, inputclass = "flex-center"); size = 12),
+    row_c(p("Investments (pick 2):")), 
+    row_c(cell(select(investment_choices[team_id].sym, options = available_invest_choices_field.sym, 
+    multiple = true, maxvalues = 2, inputclass = "flex-center", label = "Pick 2"), size = 8))
 )
 
 @slide(
     h1("Overview of choices of teams"), 
     spacer("2vw"),
-    row(class = "flex-center",
+    row_c(
         cell(table(choices_table.sym, hide__bottom = true); size = 10 - (4 - num_teams)))
 )
 
@@ -137,10 +137,7 @@ end
     spacer("2vw"),
     row(class = "text-center",
         h2("Data (units: potatoes)", style = "margin-bottom:-100px; z-index:1")),
-    row(class = "flex-center",
-        content),
-    row(class = "flex-center",
-        )
+    row_c(content),
 )
 
 @slide(
