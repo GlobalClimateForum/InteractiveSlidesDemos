@@ -1,3 +1,16 @@
+/*#region layout tweaks */
+
+@media screen and (min-height: 800px) 
+{
+    .slide:not(.scroll-always) {
+    height: 1px; /* https://stackoverflow.com/questions/8468066/child-inside-parent-with-min-height-100-not-inheriting-height */
+    /* height 1px avoids a scrollbar on big screens, but it causes the footer to occlude content (when we actually want to scroll) */
+    /* if you want to scroll on big screens too, you can add the class scroll-always to a slide, or completely disable this rule */
+    /* scroll-always is by default added to slides for controllers */
+}
+}
+/*#endregion*/
+
 /*#region hide unwanted elements */
 
 [v-cloak] { /* https://v2.vuejs.org/v2/api/#v-cloak */ 
