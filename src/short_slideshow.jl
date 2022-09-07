@@ -15,7 +15,8 @@ teamsdata = [pd(string("Dummy Team ", t_id)) for t_id in 1:num_teams]
 
 plotdata = @use_field!("VectorPlotData", init_val = deepcopy(teamsdata))
 plotconfig = @use_field!("PlotConfig")
-plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"),))
+plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"), 
+    legend = PlotLayoutLegend(orientation = "h", xanchor = "center", y= 1.3, x= 0.5))) #better on small screens
 choice = @use_fields!("Vector", init_val = ["No change"])
 possible_choices = @use_field!("Vector", init_val = ["No change", "Increase", "Decrease", "Sine"])
 
