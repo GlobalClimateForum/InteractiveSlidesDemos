@@ -7,6 +7,8 @@ row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwar
 
 feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
+timerstr = @use_field!("String", init_val = "")
+timerrunning = @use_field!("Bool", init_val = false)
 
 event1_choices = @use_fields!("String", init_val = "moderate")
 event2_choices = @use_fields!("Bool", init_val = false)
@@ -43,7 +45,7 @@ end
 
 if params[:init] #Handlers
 for t_id in team_ids
-    new_handler(getfield(pmodel, Symbol("current_id", t_id))) do id
+    new_handler(@getslidefield(t_id)) do id
         if id == pmodel.num_slides[]
             try mkdir("out") catch end
             time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
@@ -68,6 +70,22 @@ for t_id in team_ids
         end
         notify(choices_table.ref)
     end
+    new_handler(@getslidefield(t_id)) do id
+        if id == 2 && !timerrunning.ref[]
+            timerrunning.ref[] = true
+            count = 30
+            t = @task begin
+                while count > 0
+                    val = timerstr.ref[]
+                    sleep(1)
+                    if val != timerstr.ref[]; break; end #to avoid multiple timers at the same time
+                    count -= 1
+                    timerstr.ref[] = string("A timer shared by all teams:", count)
+                end
+            end
+            schedule(t)
+        end
+    end
 end
 end
 
@@ -90,7 +108,7 @@ end
 )
 
 @slide(
-    img(src = "img/powerpoint_slide.png", style = "height: 100%;"), class = "text-center",
+    img(src = "img/powerpoint_slide.png", style = "max-height: 100%;"), class = "text-center",
     title = "Easily copy slides from powerpoint"
 )
 
@@ -151,7 +169,7 @@ end
     title = "Thanks"
 )
 
-auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
+auxUI = [quasar(:header, quasar(:toolbar, [navcontrols(params)..., space(), span("", @text(timerstr.sym))])),
 
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
         [img(src = "img/logo.png", style = "max-height:1rem"), space(), 
