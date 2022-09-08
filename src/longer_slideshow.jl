@@ -45,8 +45,8 @@ if params[:init] #Handlers
 for t_id in team_ids
     new_handler(getfield(pmodel, Symbol("current_id", t_id))) do id
         if id == pmodel.num_slides[]
-            try mkdir("/out") catch end
-            time = Dates.format(Dates.now(), "yyyy-mm-dd at HH:MM")
+            try mkdir("out") catch end
+            time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
             open("out/feedback $time.html", "w") do io
                 write(io, feedback.ref[])
             end
