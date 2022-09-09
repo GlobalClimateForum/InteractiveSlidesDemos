@@ -15,6 +15,8 @@ using InteractiveSlides, StipplePlotly
     @addfields(5, ::Vector{PlotData}, [PlotData()])
 end
 
+add_js("vue_custom", basedir = @__DIR__)
+
 includet("./short_slideshow.jl") #trying out longer_slideshow.jl can be done by either (e.g.)
 # (1) changing above line correspondingly and then (re-)starting the Julia session or
 # (2) including "longer_slideshow.jl" in the REPL (e.g. via includet), and then resetting the presentation by supplying "reset=1" as a URL argument (this works only if you have already executed this script).
