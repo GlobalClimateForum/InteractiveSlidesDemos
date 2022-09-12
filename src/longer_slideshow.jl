@@ -7,8 +7,6 @@ row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwar
 
 feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
-timerstr = @use_field!("String", init_val = "")
-timerrunning = @use_field!("Bool", init_val = false)
 
 event1_choices = @use_fields!("String", init_val = "moderate")
 event2_choices = @use_fields!("Bool", init_val = false)
@@ -69,22 +67,6 @@ for t_id in team_ids
             choices_table.ref.data[!, t_id+1][3:5] = [choice ? "✓" : "" for choice in choices_bool]
         end
         notify(choices_table.ref)
-    end
-    new_handler(@getslidefield(t_id)) do id
-        if id == 2 && !timerrunning.ref[]
-            timerrunning.ref[] = true
-            count = 30
-            t = @task begin
-                while count > 0
-                    val = timerstr.ref[]
-                    sleep(1)
-                    if val != timerstr.ref[]; break; end #to avoid multiple timers at the same time
-                    count -= 1
-                    timerstr.ref[] = string("A timer shared by all teams:", count)
-                end
-            end
-            schedule(t)
-        end
     end
 end
 end
@@ -169,7 +151,7 @@ end
     title = "Thanks"
 )
 
-auxUI = [quasar(:header, quasar(:toolbar, [navcontrols(params)..., space(), span("", @text(timerstr.sym))])),
+auxUI = [quasar(:header, quasar(:toolbar, navcontrols(params))),
 
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
         [img(src = "img/logo.png", style = "max-height:1rem"), space(), 
