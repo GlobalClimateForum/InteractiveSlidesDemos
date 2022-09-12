@@ -24,4 +24,4 @@ includet("./short_slideshow.jl") #trying out longer_slideshow.jl can be done by 
 
 serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
 
-Genie.up(8080, open_browser = true)
+Genie.up(8080, "0.0.0.0", open_browser = true) #with 0.0.0.0, you can access the presentation from any device in your local network (using the IP of the device you are hosting with)
