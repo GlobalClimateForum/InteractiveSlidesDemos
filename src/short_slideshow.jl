@@ -63,7 +63,9 @@ end
                                     This view can be accessed e.g. by passing ?ctrl=1 as an URL parameter"), style = "color:red") : "",
 )
 
-auxUI = [quasar(:header, quasar(:toolbar, [navcontrols(params)..., space(), span("", @text("timer > 60 ? Math.round(timer) : timer"))])),
+timertext = """timer > 60 ? Math.round(timer/60) + ":" + (timer%60 > 9 ? timer%60 : "0" + timer%60) : timer"""
+
+auxUI = [quasar(:header, quasar(:toolbar, [navcontrols(params)..., space(), span("", @text(timertext))])),
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
         [space(), slide_id(params)])], iftitleslide(slides, params)),
         menu_slides(slides, params, (id, title) -> string(id) * ": " * title)]
