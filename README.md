@@ -1,6 +1,8 @@
-A repository containing demos for the package InteractiveSlides.jl, which can be found [here](https://github.com/GlobalClimateForum/InteractiveSlides.jl). For a quick setup, simply clone the repository, start a Julia session within the folder, activate and instantiate the project, and type "include("startapp.jl")". This will eventually open a browser window with the demo slideshow.
+A repository containing demos for the package InteractiveSlides.jl, which can be found [here](https://github.com/GlobalClimateForum/InteractiveSlides.jl). For a quick setup, simply clone the repository, start a Julia session within the folder, activate and instantiate the project[^1], and type "include("startapp.jl")". This will eventually open a browser window with the demo slideshow.
 
 By default, a short demo presentation with 3 slides is loaded (see screenshots below). There also is a longer presentation (with entirely different slides) which you can load by changing the included file in InteractiveSlidesDemos.jl.
+
+[^1]: Since InteractiveSlides.jl is not yet registered as a Julia package, you'll need to type "dev https://github.com/GlobalClimateForum/InteractiveSlides.jl" in Pkg mode.
 
 ## Screenshots:
 
