@@ -5,6 +5,8 @@ team_id = params[:team_id]::Int
 ####### custom code goes below ######
 row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwargs...)
 
+pmodel.files[] = [filedict(dirname(@__DIR__))]
+
 feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
 
@@ -74,8 +76,29 @@ end
 #introduction
 #region
 @titleslide(
-    h1("InteractiveSlides.jl in Action"), 
-    p("Let's go."),
+    h1("InteractiveSlides.jl"), 
+    p("A presentation."),
+)
+
+@simpleslide(h1("What is 'behind' this presentation?"), 
+    img(src = "img/scheme.png", style = "max-height: 60vh"),
+)
+
+@simpleslide(h1("Let's look at the project folder"), 
+    draggabletree(:files, rowkey = "key", group = "test"; style = "font-size:0.65rem"),
+    pre(code("print(abc * 'x')
+    for a in [1,2]
+        print('a')
+    end", class = "language-julia hljs")),
+    class = "scroll-always"
+)
+
+@simpleslide(h1("Note: You can still easily make use of PowerPoint"), 
+    img(src = "img/fromPowerpoint.jpg", style = "max-height: 60vh"),
+)
+
+@titleslide(
+    h1("Sample presentation"), 
 )
 
 @slide(
@@ -87,11 +110,6 @@ end
             "Point C", simplelist("Subpoint C1", "Subpoint C2")), 
             autocell(img(src = "img/samplepic.jpg", style = "max-width: 45vmax", class = "gt-sm"))]
     )
-)
-
-@slide(
-    img(src = "img/powerpoint_slide.png", style = "max-height: 100%;"), class = "text-center",
-    title = "Easily copy slides from powerpoint"
 )
 
 @simpleslide(h1("This slide has vertically centered content"), 
