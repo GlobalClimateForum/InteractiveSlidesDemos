@@ -16,13 +16,10 @@ using InteractiveSlides, StipplePlotly
     files::R{Vector{Dict{Symbol, Any}}} = []
 end
 
-add_js("vue_custom", basedir = @__DIR__)
+# add_js("draggable_tree", basedir = @__DIR__) #because draggable_tree.js adds a custom Vue component, it must be loaded in this way. 
 
-includet("./custom_funs.jl")
-includet("./longer_slideshow.jl") #trying out longer_slideshow.jl can be done by either (e.g.)
-# (1) changing above line correspondingly and then (re-)starting the Julia session or
-# (2) including "longer_slideshow.jl" in the REPL (e.g. via includet), and then resetting the presentation by supplying "reset=1" as a URL argument (this works only if you have already executed this script).
-# Note: It is not (yet?) possible to serve several slideshows at the same time
+includet("./draggable_tree.jl") #simply some additional code for a custom component used on slide number 6 
+includet("./content.jl")
 
 serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
 

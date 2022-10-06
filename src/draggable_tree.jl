@@ -1,4 +1,4 @@
-#custom funs can also defined within gen_content (which may be more convenient, for small functions in particular)
+# below example code for a draggable tree component is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
 function filedict(startfile)
     dict(; kwargs...) = Dict{Symbol, Any}(kwargs...)
     if isdir(startfile)

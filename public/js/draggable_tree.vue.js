@@ -1,4 +1,5 @@
-// you can define custom Vue directives and components here (e.g., see hotkeys.js of InteractiveSlides.jl), and also add normal javascript
+// because this file ends with ".vue.js", InteractiveSlides.jl will load it differently than other js files 
+// i.e., if you want to define custom vue components, name the files "*.vue.js"
 
 // below example code for a draggable tree component is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
 Vue.component('QDraggableTree', {

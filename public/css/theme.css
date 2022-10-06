@@ -60,10 +60,6 @@ html {
     font-size: 2.5vw;
 }
 
-.slide :is(h1, h2, h3, h4, h5, h6) {
-    padding: 0 10vw;
-}
-
 .titleslide h1 {
     font-size: 3rem;
     line-height: 3rem;
@@ -116,6 +112,13 @@ text { /* Plotly stuff, such as legends or tick labels */
 
 /*#region breakpoint behavior */
 
+@media screen and (min-width: 600px) 
+{
+    .slide :is(h1, h2, h3, h4, h5, h6) {
+        padding: 0 7%;
+    }
+}
+
 @media screen and (max-width: 1600px) and (min-width: 1000px) {
     html {
     font-size: 40px;
@@ -159,7 +162,7 @@ text { /* Plotly stuff, such as legends or tick labels */
     background-color: var(--q-color-white);
 }
 
-.q-drawer .q-list {
+.q-drawer .q-list, pre code {
     font-size: 0.65rem;
 }
 
