@@ -7,72 +7,6 @@ row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwar
 
 pmodel.files[] = [filedict(dirname(@__DIR__))]
 
-feedback = @use_field!("String", init_val = "")
-team_ids = collect(1:num_teams)
-
-event1_choices = @use_fields!("String", init_val = "moderate")
-event2_choices = @use_fields!("Bool", init_val = false)
-investment_choices = @use_fields!("Vector", init_val = [])
-available_invest_choices = ["Investment A", "Investment B", "Investment C"]
-available_invest_choices_field = @use_field!("Vector", init_val = available_invest_choices)
-row_names = OrderedDict(:Choices => append!(["Event 1", "Event 2"], available_invest_choices))
-df = DataFrame(;merge(row_names,OrderedDict((Symbol("Team $t_id")=>["", "", "", "", ""] for t_id = team_ids)...))...)
-choices_table = @use_field!("DataTable", init_val = DataTable(df))
-
-data = Dict{String, Vector{Float64}}("little" => [17.85, 13.76], "moderate" => [24.8, 20.59], "high" => [33.02, 28.67])
-plotdata = @use_field!("VectorPlotData", 
-                    init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["", "", "", ""], textposition = "outside")])
-plotconfig = @use_field!("PlotConfig")
-plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(
-    height = 600,
-    font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"),
-    yaxis = [PlotLayoutAxis(tickprefix = "+", xy = "y", range = [0.0, 38.0], nticks = 4)],
-    xaxis = [PlotLayoutAxis(tickvals = team_ids, tickangle = 0, automargin = true;
-            ticktext = ["Team $t_id" for t_id in team_ids])],
-))
-
-function handler_helper(t_id)
-    yval = data[event1_choices[t_id].ref[]][Int(event2_choices[t_id].ref[])+1]
-    plotdata.ref[1].y[t_id] = yval
-    plotdata.ref[1].text[t_id] = "+" * string(round(Int, yval))
-    xticktext = num_teams > 2 ? "Team $t_id<br>$(choices_table.ref.data[!, t_id+1][1])<br>$(choices_table.ref.data[!, t_id+1][2])" : "Team $t_id"
-    plotlayout.ref.xaxis[1].ticktext[t_id] = xticktext
-    plotlayout.ref.yaxis[1].range[2] = max(plotdata.ref[1].y...) + 5 #https://github.com/plotly/plotly.js/issues/2001
-    notify(choices_table.ref)
-    notify(plotdata.ref)
-    notify(plotlayout.ref)
-end
-
-if params[:init] #Handlers
-for t_id in team_ids
-    new_handler(@getslidefield(t_id)) do id
-        if id == pmodel.num_slides[]
-            try mkdir("out") catch end
-            time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
-            open("out/feedback $time.html", "w") do io
-                write(io, feedback.ref[])
-            end
-            CSV.write("out/choices $time.csv", choices_table.ref[].data)
-        end
-    end
-    new_handler(event1_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][1] = choice
-        handler_helper(t_id)
-    end
-    new_handler(event2_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][2] = choice ? "yes" : "no"
-        handler_helper(t_id)
-    end
-    new_handler(investment_choices[t_id]) do choices
-        if length(choices) == 2
-            choices_bool = contains.(available_invest_choices, choices[1]) .|| contains.(available_invest_choices, choices[2])
-            choices_table.ref.data[!, t_id+1][3:5] = [choice ? "✓" : "" for choice in choices_bool]
-        end
-        notify(choices_table.ref)
-    end
-end
-end
-
 #introduction
 #region
 @titleslide(
@@ -178,6 +112,79 @@ title = "Creating slides is easy"
 
 #endregion
 
+
+#Fields and handlers for interactive slides (which come later, see below)
+#region
+feedback = @use_field!("String", init_val = "")
+team_ids = collect(1:num_teams)
+
+event1_choices = @use_fields!("String", init_val = "moderate")
+event2_choices = @use_fields!("Bool", init_val = false)
+investment_choices = @use_fields!("Vector", init_val = [])
+available_invest_choices = ["Investment A", "Investment B", "Investment C"]
+available_invest_choices_field = @use_field!("Vector", init_val = available_invest_choices)
+row_names = OrderedDict(:Choices => append!(["Event 1", "Event 2"], available_invest_choices))
+df = DataFrame(;merge(row_names,OrderedDict((Symbol("Team $t_id")=>["", "", "", "", ""] for t_id = team_ids)...))...)
+choices_table = @use_field!("DataTable", init_val = DataTable(df))
+
+data = Dict{String, Vector{Float64}}("little" => [17.85, 13.76], "moderate" => [24.8, 20.59], "high" => [33.02, 28.67])
+plotdata = @use_field!("VectorPlotData", 
+                    init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["", "", "", ""], textposition = "outside")])
+plotconfig = @use_field!("PlotConfig")
+plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(
+    height = 600,
+    font = Font("Helvetica, sans-serif", 40, "rgb(31, 31, 31)"),
+    yaxis = [PlotLayoutAxis(tickprefix = "+", xy = "y", range = [0.0, 38.0], nticks = 4)],
+    xaxis = [PlotLayoutAxis(tickvals = team_ids, tickangle = 0, automargin = true;
+            ticktext = ["Team $t_id" for t_id in team_ids])],
+))
+
+function handler_helper(t_id)
+    yval = data[event1_choices[t_id].ref[]][Int(event2_choices[t_id].ref[])+1]
+    plotdata.ref[1].y[t_id] = yval
+    plotdata.ref[1].text[t_id] = "+" * string(round(Int, yval))
+    xticktext = num_teams > 2 ? "Team $t_id<br>$(choices_table.ref.data[!, t_id+1][1])<br>$(choices_table.ref.data[!, t_id+1][2])" : "Team $t_id"
+    plotlayout.ref.xaxis[1].ticktext[t_id] = xticktext
+    plotlayout.ref.yaxis[1].range[2] = max(plotdata.ref[1].y...) + 5 #https://github.com/plotly/plotly.js/issues/2001
+    notify(choices_table.ref)
+    notify(plotdata.ref)
+    notify(plotlayout.ref)
+end
+
+if params[:init] #Handlers
+for t_id in team_ids
+    new_handler(@getslidefield(t_id)) do id
+        if id == pmodel.num_slides[]
+            try mkdir("out") catch end
+            time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
+            open("out/feedback $time.html", "w") do io
+                write(io, feedback.ref[])
+            end
+            CSV.write("out/choices $time.csv", choices_table.ref[].data)
+        end
+    end
+    new_handler(event1_choices[t_id]) do choice
+        choices_table.ref.data[!, t_id+1][1] = choice
+        handler_helper(t_id)
+    end
+    new_handler(event2_choices[t_id]) do choice
+        choices_table.ref.data[!, t_id+1][2] = choice ? "yes" : "no"
+        handler_helper(t_id)
+    end
+    new_handler(investment_choices[t_id]) do choices
+        if length(choices) == 2
+            choices_bool = contains.(available_invest_choices, choices[1]) .|| contains.(available_invest_choices, choices[2])
+            choices_table.ref.data[!, t_id+1][3:5] = [choice ? "✓" : "" for choice in choices_bool]
+        end
+        notify(choices_table.ref)
+    end
+end
+end
+#endregion
+
+
+#Interactive slides
+#region
 @slide(
     h1("Choose wisely!"), 
     spacer("2vw"),
@@ -230,9 +237,12 @@ end
     h2("""Thaanks (your input has been saved in folder "out")!""", class = "absolute-center"), 
 title = "Thanks"
 )
+#endregion
 
+
+# HEADER AND FOOTER
+# needs to be at the end because the variable "slides" gets updated by each use of @slide
 timertext = """timer > 60 ? Math.round(timer/60) + " min" : timer"""
-
 auxUI = [quasar(:header, quasar(:toolbar, [navcontrols(params)..., space(), span("", @text(timertext), iftitleslide(slides, params))])),
 
         quasar(:footer, [quasar(:separator), quasar(:toolbar, 
