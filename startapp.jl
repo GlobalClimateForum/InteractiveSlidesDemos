@@ -1,3 +1,3 @@
 using Revise
 __revise_mode__ = :eval
-includet("src/InteractiveSlidesDemos.jl")
+includet("src/" * Pkg.project().name * ".jl")
