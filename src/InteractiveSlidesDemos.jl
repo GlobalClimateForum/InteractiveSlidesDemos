@@ -16,10 +16,10 @@ using InteractiveSlides, StipplePlotly
     files::R{Vector{Dict{Symbol, Any}}} = []
 end
 
-includet("./elements.jl") #mostly additional code for a custom component used on slide number 6 
-includet("./introduction.jl")
-includet("./main.jl")
-includet("./content.jl") #this file defines gen_content() which is passed to serve_presentation() below 
+includet("elements.jl") #mostly additional code for a custom component used on slide number 6 
+includet("introduction.jl")
+includet("main.jl")
+includet("content.jl") #this file defines gen_content() which is passed to serve_presentation() below 
 
 serve_presentation(PresentationModel, gen_content; num_teams_default = 2, max_num_teams = 4)
 
