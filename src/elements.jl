@@ -1,3 +1,5 @@
+row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwargs...) # just a convenience function
+
 # below example code for a draggable tree component is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
 function filedict(startfile)
     dict(; kwargs...) = Dict{Symbol, Any}(kwargs...)

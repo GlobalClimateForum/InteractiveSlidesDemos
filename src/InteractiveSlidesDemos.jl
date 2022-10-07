@@ -16,10 +16,11 @@ using InteractiveSlides, StipplePlotly
     files::R{Vector{Dict{Symbol, Any}}} = []
 end
 
-# add_js("draggable_tree", basedir = @__DIR__) #because draggable_tree.js adds a custom Vue component, it must be loaded in this way. 
-
-includet("./draggable_tree.jl") #simply some additional code for a custom component used on slide number 6 
-includet("./content.jl")
+includet("./elements.jl") #mostly additional code for a custom component used on slide number 6 
+includet("./introduction.jl")
+includet("./main.jl")
+includet("./content.jl") #this file defines gen_content() which is passed to serve_presentation() below 
+#the code inside elements.jl and introduction.jl could also have been written inside the definition of gen_content()
 
 serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
 

@@ -1,7 +1,9 @@
 // because this file ends with ".vue.js", InteractiveSlides.jl will load it differently than other js files 
 // i.e., if you want to define custom vue components, name the files "*.vue.js"
 
-// below example code for a draggable tree component is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
+// below example code for a draggable tree component (used on slide 6) 
+// is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
+
 Vue.component('QDraggableTree', {
     template: `<div class="q-pa-md q-gutter-sm">
   
