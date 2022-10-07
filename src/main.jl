@@ -39,7 +39,8 @@ function handler_helper(t_id)
     notify(plotlayout.ref)
 end
 
-if params[:init] #Handlers
+#Handlers
+if params[:init]
 for t_id in team_ids
     new_handler(@getslidefield(t_id)) do id
         if id == pmodel.num_slides[]
@@ -100,8 +101,7 @@ team_id = params[:team_id]::Int
         cell(table(choices_table.sym, hide__bottom = true); size = 10 - (4 - num_teams)))
 )
 
-content = [cell(plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym); size = 11 - 2 * (4 - num_teams)), 
-            cell(p("(Some more info)"), size = 2)]
+content = [cell(plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym); size = 11 - 2 * (4 - num_teams))]
 
 team_description(t_id) = p(["Team $t_id:<br>", span("", @text("$(event1_choices[t_id].str)")), "<br>", span("", @text("$(event2_choices[t_id].str)"))],
                             style = "font-size:0.8rem")
@@ -112,9 +112,8 @@ end
 
 @slide(
     h1("Events - Outcomes"), 
-    spacer("2vw"),
-    row(class = "text-center",
-        h2("Data (units: potatoes)", style = "margin-bottom:-100px; z-index:1")),
+    spacer("1vw"),
+    row_c(p("Each team's bar depends on the choice the team made previously.", style = "margin-bottom:-50px; z-index:1")),
     row_c(content),
     params[:is_controller] ? row(p("Here's some info which can only be seen by the controller (speaker). 
     This view can be accessed e.g. by passing ?ctrl=1 as an URL parameter"), style = "color:red") : "",

@@ -20,8 +20,7 @@ includet("./elements.jl") #mostly additional code for a custom component used on
 includet("./introduction.jl")
 includet("./main.jl")
 includet("./content.jl") #this file defines gen_content() which is passed to serve_presentation() below 
-#the code inside elements.jl and introduction.jl could also have been written inside the definition of gen_content()
 
-serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
+serve_presentation(PresentationModel, gen_content; num_teams_default = 2, max_num_teams = 4)
 
 Genie.up(8080, "0.0.0.0", open_browser = true) #with 0.0.0.0, you can access the presentation from any device in your local network (using the IP of the device you are hosting with)
