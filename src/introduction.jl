@@ -52,7 +52,7 @@ pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (
         
         #this executes InteractiveSlidesDemos.jl
         #which in turn includes content.jl"""
-    , class = "language-julia hljs"), @appear_on(2)),
+    , class = "language-julia hljs"), @appear_on(2, true)),
 
     ], class = "justify-evenly"),
 class = "scroll-always", num_states = 2
@@ -74,7 +74,7 @@ class = "scroll-always", num_states = 2
 #     serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
 
 #     Genie.up(8080, "0.0.0.0", open_browser = true)"""
-# , class = "language-julia hljs"), @show_from_to(3, 3)),
+# , class = "language-julia hljs"), show_from_to(3, 3)),
 
 @slide(h1("This is what you might typically be doing:"), 
     spacer("1vw"),
