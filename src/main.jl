@@ -42,7 +42,7 @@ end
 #Handlers
 if params[:init]
 for t_id in team_ids
-    new_handler(@getslidefield(t_id)) do id
+    new_listener(@getslidefield(t_id)) do id
         if id == pmodel.num_slides[]
             try mkdir("out") catch end
             time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
@@ -52,15 +52,15 @@ for t_id in team_ids
             CSV.write("out/choices $time.csv", choices_table.ref[].data)
         end
     end
-    new_handler(event1_choices[t_id]) do choice
+    new_listener(event1_choices[t_id]) do choice
         choices_table.ref.data[!, t_id+1][1] = choice
         handler_helper(t_id)
     end
-    new_handler(event2_choices[t_id]) do choice
+    new_listener(event2_choices[t_id]) do choice
         choices_table.ref.data[!, t_id+1][2] = choice ? "yes" : "no"
         handler_helper(t_id)
     end
-    new_handler(investment_choices[t_id]) do choices
+    new_listener(investment_choices[t_id]) do choices
         if length(choices) == 2
             choices_bool = contains.(available_invest_choices, choices[1]) .|| contains.(available_invest_choices, choices[2])
             choices_table.ref.data[!, t_id+1][3:5] = [choice ? "✓" : "" for choice in choices_bool]
