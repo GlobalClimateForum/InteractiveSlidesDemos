@@ -43,44 +43,27 @@ title = "Timer"
 )
 
 @simpleslide(h1("How does it work?"), 
-    row_c(img(src = "img/scheme.png", style = "max-height: 60vh")),
+    img(src = "img/scheme.png", style = "height: 90%"),
 )
 
 pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (referred to by :files)
-@slide(h1("Let's look at the project folder of this presentation"), 
+@slide(h1("Let's look at the project folder of this presentation (click on the folder!)"), 
     row([
+
     draggabletree(:files; style = "font-size:0.75rem"),
-    pre(code(
-        """#startapp.jl
-        using Revise
-        __revise_mode__ = :eval
-        includet("src/" * Pkg.project().name * ".jl")
-        
-        #this executes InteractiveSlidesDemos.jl
-        #which in turn includes content.jl"""
-    , class = "language-julia hljs"), @appear_on(2, true)),
+
+    Html.div([
+    pre(code_startapp),
+    @linktoslide("Click here if you saw enough code for now", "+= 1")
+    ],@show_from_to(2, 2, true, false)),
+
+    pre(code_InteractiveSlidesDemos, @show_from_to(3, 3)),
+
+    pre(code_content, @appear_on(4)),
 
     ], class = "justify-evenly"),
-class = "scroll-always", num_states = 2
+class = "scroll-always", num_states = 4
 )
-
-# pre(code(
-#     """#InteractiveSlidesDemos.jl
-#     using InteractiveSlides
-
-#     @presentation! struct PresentationModel <: ReactiveModel
-#         files::R{Vector{Dict{Symbol, Any}}} = []
-#     end
-
-#     add_js("vue_custom", basedir = @__DIR__)
-
-#     includet("./custom_funs.jl")
-#     includet("./content.jl")
-
-#     serve_presentation(PresentationModel, gen_content; num_teams_default = 2)
-
-#     Genie.up(8080, "0.0.0.0", open_browser = true)"""
-# , class = "language-julia hljs"), show_from_to(3, 3)),
 
 @slide(h1("This is what you might typically be doing:"), 
     spacer("1vw"),
@@ -102,6 +85,15 @@ class = "scroll-always", num_states = 2
         ], size = 6),
     ]),
 title = "Creating slides is easy"
+)
+
+@slide(h1("This means you can use Git and GitHub!"), 
+    spacer("1vw"),
+    row([
+        autocell(img(src = "img/commits.jpg", style = "max-height: 70vh")),
+        autocell(a("GitHub repository of this presentation", href = "https://github.com/GlobalClimateForum/InteractiveSlidesDemos"))
+    ], class = "items-center justify-evenly"),
+    title = "Git and GitHub!",
 )
 
 return slides
