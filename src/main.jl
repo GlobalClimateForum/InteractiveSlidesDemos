@@ -78,6 +78,8 @@ end
     h1("So what about interactivity?"),
 )
 
+@controllerslide(h1("Controller slide"), p("This slide can only be seen by the controller (accessible via '/0' in URL)."))
+
 team_id = params[:team_id]::Int
 @slide(
     h1("Choose wisely!"), 
@@ -115,8 +117,8 @@ end
     spacer("1vw"),
     row_c(p("Each team's bar depends on the choice the team made previously.", style = "margin-bottom:-50px; z-index:1")),
     row_c(content),
-    params[:is_controller] ? row(p("Here's some info which can only be seen by the controller (speaker). 
-    This view can be accessed e.g. by passing ?ctrl=1 as an URL parameter"), style = "color:red") : "",
+    params[:show_whole_slide] ? row(p("Here's some info which can only be seen by the speaker. 
+    This view can be accessed by accessing the URL '.../0' or passing ?shift=1 as an URL parameter"), style = "color:red") : "",
 )
 
 @slide(
