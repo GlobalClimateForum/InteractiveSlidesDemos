@@ -12,6 +12,7 @@ function introduction(pmodel::PresentationModel, params::Dict, slides::Vector{Sl
 
 @simpleslide(h1("InteractiveSlides.jl is powered by the <a href=https://genieframework.com>Genie framework</a>"), 
     iframe(src = "https://genieframework.com", width="90%", height="90%"),
+title = "The Genie framework"
 )
 
 @slide(
@@ -54,7 +55,7 @@ pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (
 
     Html.div([
     pre(code_startapp),
-    @linktoslide("Click here if you saw enough code for now", "+= 1")
+    @linktoslide("Click here if you saw enough code<br>(skip to next slide)", "+= 1")
     ],@show_from_to(2, 2, true, false)),
 
     pre(code_InteractiveSlidesDemos, @show_from_to(3, 3)),
@@ -93,7 +94,7 @@ title = "Creating slides is easy"
         autocell(img(src = "img/commits.jpg", style = "max-height: 70vh")),
         autocell(a("GitHub repository of this presentation", href = "https://github.com/GlobalClimateForum/InteractiveSlidesDemos"))
     ], class = "items-center justify-evenly"),
-    title = "Git and GitHub!",
+title = "Git and GitHub!",
 )
 
 return slides
