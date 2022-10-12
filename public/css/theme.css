@@ -48,8 +48,13 @@ body {
     background-color: var(--q-color-white);
 }
 
-.current {
+.menu_current {
     background-color: var(--q-color-secondary);
+}
+
+.menu_titleslide { 
+/* each slide element shown in the menu is assigned "menu_x" classes, where "x" are the classes assigned to the slide itself */
+    font-weight: bold;
 }
 
 /*#endregion*/
