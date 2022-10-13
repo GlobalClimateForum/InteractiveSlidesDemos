@@ -16,20 +16,37 @@ title = "The Genie framework"
 )
 
 @slide(
-    h1("You can thus use web technologies to create your slide"), 
+    h1("You can thus use modern web technologies for creating your slideshow"), 
     row(class = "items-center justify-around",
     [cell(size=1), 
-     cell(p("For example, this slide is responsive. The picture only shows for wide screens (try resizing the window)")),
-     autocell(img(src = "img/samplepic.jpg", style = "max-width: 45vmax", class = "gt-sm"))]
-    )
+     cell(p("For example, this slide is responsive. E.g., the picture here only shows for wide screens (try resizing the window). 
+     <a href=https://v1.quasar.dev/style/visibility>This behavior</a> and other UI stuff is enabled by 
+     Quasar (which is shipped with the Genie framework).")),
+     img(src = "img/samplepic.jpg", style = "max-width: 45vmax", class = "gt-sm")]
+    ),
+title = "Quasar"
 )
 
 @simpleslide(h1("This slide has vertically centered content"), 
     simplelist(
-        "Try",
-        "resizing", simplelist("the", "window")), 
-    img(src = "img/samplepic.jpg", style = "max-height: 60vh"),
-title = "Vertically centered content"
+        "Plus caption",
+        "Plus rounded borders",
+        "Plus tooltip"), 
+        q__img([Html.div("<a href=https://v1.quasar.dev/vue-components/img>Caption</a>", class = "absolute-bottom text-center text-subtitle2"), 
+        q__icon(tooltip("Click link in caption for more info on Quasar and images."), name = "info",  
+             class = "absolute all-pointer-events", size = "1.5rem", style = "top: 8px; left: 8px")],
+        src = "img/samplepic.jpg", style = "height: 60vh; width:40vw", class = "rounded-borders"),
+title = "More Quasar stuff"
+)
+
+@slide(h1("There's more"),
+    spacer("2vw"),
+    simplelist(
+        "Quasar and Stipple employ <a href=https://v2.vuejs.org/>Vue.js</a> - which you can also use.",
+        "You can also run plain Javascript.",
+        "CSS is included too: By simply editing the <a href=css/theme.css>theme.css</a> file, you can quickly change the style of this presentation.",
+        "And HTML! Woohoo!", style = "max-width:80%; margin:auto"), 
+title = "Vue, Javascript, CSS"
 )
 
 @simpleslide(h1("InteractiveSlides.jl makes creating presentations a breeze"),
@@ -43,7 +60,7 @@ title = "Vertically centered content"
 title = "Timer"
 )
 
-@simpleslide(h1("How does it work?"), 
+@simpleslide(h1("How does it all work?"), 
     img(src = "img/scheme.png", style = "height: 90%"),
 )
 
@@ -55,14 +72,14 @@ pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (
 
     Html.div([
     pre(code_startapp),
-    @linktoslide("Click here if you saw enough code<br>(skip to next slide)", "+= 1")
+    @linktoslide("Click here if you saw enough code (skip to next slide)", "+= 1", style = "font-size:0.65rem")
     ],@show_from_to(2, 2, true, false)),
 
     pre(code_InteractiveSlidesDemos, @show_from_to(3, 3)),
 
     pre(code_content, @appear_on(4)),
 
-    ], class = "justify-evenly"),
+    ], class = "justify-around"),
 class = "scroll-always", num_states = 4
 )
 

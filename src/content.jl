@@ -7,9 +7,9 @@ slides = main(pmodel, params, slides)
 # HEADER AND FOOTER
 # needs to be at the end because the variable "slides" gets updated by each use of @slide
 timertext = """timer > 60 ? Math.round(timer/60) + " min" : timer"""
-auxUI = [quasar(:header, toolbar([@navcontrols()..., space(), span("", @text(timertext), @hide_on_titleslide)])),
+auxUI = [q__header(toolbar([@navcontrols()..., space(), span("", @text(timertext), @hide_on_titleslide)])),
 
-        quasar(:footer, [separator(), toolbar( 
+        q__footer([separator(), toolbar( 
         [img(src = "img/logo.png", style = "max-height:1rem"), space(), 
         span("InteractiveSlides.jl in action"), space(), @slide_id])], @hide_on_titleslide),
 

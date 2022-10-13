@@ -13,20 +13,14 @@
 }
 /*#endregion*/
 
-/*#region hide unwanted elements */
+
+/*#region hide items during loading of page */
 
 [v-cloak] { /* https://v2.vuejs.org/v2/api/#v-cloak */ 
-    display: none; /* hides items during loading of page */
+    display: none;
   }
-
-th:first-child { /* hides top left column heading of table */
-    color: var(--q-color-white);
-}
-
-.modebar { /* hides modebar by StipplePlotly */
-    visibility: hidden;
-}
 /*#endregion*/
+
 
 /*#region main colors */
 
@@ -61,8 +55,8 @@ body {
 .menu_current {
     background-color: var(--q-color-secondary);
 }
-
 /*#endregion*/
+
 
 /*#region sizes, fonts and positioning */
 
@@ -117,8 +111,8 @@ text { /* Plotly stuff, such as legends or tick labels */
     font-size: 1rem !important;
     font-family: Roboto, -apple-system, Helvetica Neue, Helvetica !important;  /* use Quasar fonts */
 }
-
 /*#endregion*/
+
 
 /*#region breakpoint behavior */
 
@@ -156,7 +150,20 @@ text { /* Plotly stuff, such as legends or tick labels */
 }
 /*#endregion*/
 
-/*#region Quasar/StippleUI (these settings have no unless these packages are being used) */
+
+/*#region StipplePlotly */
+
+.modebar { /* hides modebar in plots */
+    visibility: hidden;
+}
+/*#endregion*/
+
+
+/*#region Quasar/StippleUI */
+
+th:first-child { /* hides top left column heading of StippleUI table */
+    color: var(--q-color-white);
+}
 
 .q-separator {
     height: 3px;
@@ -172,7 +179,7 @@ text { /* Plotly stuff, such as legends or tick labels */
     background-color: var(--q-color-white);
 }
 
-.q-drawer .q-list, pre code {
+.q-drawer .q-list, pre code, .q-tooltip {
     font-size: 0.65rem;
 }
 
