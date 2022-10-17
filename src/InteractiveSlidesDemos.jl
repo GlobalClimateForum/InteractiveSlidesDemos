@@ -1,4 +1,4 @@
-using DataStructures, CSV
+using Revise, DataStructures, CSV
 import DataFrames.DataFrame
 
 using InteractiveSlides, StipplePlotly
