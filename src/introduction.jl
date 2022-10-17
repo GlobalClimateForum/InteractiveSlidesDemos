@@ -83,25 +83,23 @@ pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (
 class = "scroll-always", num_states = 4
 )
 
-@slide(h1("This is what you might typically be doing:"), 
-    spacer("1vw"),
-    row([
-    cell([
-        h2("Step 1: Save picture"),
-        img(src = "img/fromPowerpoint.jpg", style = "width: 90%"),
-        ], class = "text-center", size = 6),
-    cell([
-        h2("Step 2: Add code to project files"),
+@simpleslide(h1("This is what you might typically be doing:"), 
+    two_columns(
+
+    [h2("Step 1: Save picture"),
+    img(src = "img/fromPowerpoint.jpg", style = "width: 90%")],
+
+    [h2("Step 2: Add code to project files"),
         pre(code(
             """@simpleslide(
                     h1("What is 'behind' 
                     this presentation?"), 
                     img(src = "img/scheme.jpg", 
                         style = "max-height: 60vh")
-                )"""
-        , class = "language-julia hljs", style = "width: 90%; margin:auto")),
-        ], size = 6),
-    ]),
+                )""", 
+            class = "language-julia hljs", style = "width: 90%; margin:auto"))],
+
+    lclass = "text-center"),
 title = "Creating slides is easy"
 )
 
