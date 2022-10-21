@@ -19,7 +19,7 @@ choices_table = @use_field!("DataTable", init_val = DataTable(df))
 
 data = Dict{String, Vector{Float64}}(e1_choices[1] => [15, 10], e1_choices[2] => [25, 20], e1_choices[3] => [35, 30])
 plotdata = @use_field!("VectorPlotData", 
-                    init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["", "", "", ""], textposition = "outside")])
+                    init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["" for i in 1:num_teams])])
 plotconfig = @use_field!("PlotConfig")
 plotlayout = @use_field!("PlotLayout", init_val = PlotLayout(
     height = 600,
