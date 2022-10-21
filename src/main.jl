@@ -6,7 +6,9 @@ num_teams = pmodel.num_teams[]::Int
 feedback = @use_field!("String", init_val = "")
 team_ids = collect(1:num_teams)
 
-event1_choices = @use_fields!("String", init_val = "moderate")
+e1_choices = ["Add 15", "Add 25", "Add 35"]
+e2_choice = "Subtract 5"
+event1_choices = @use_fields!("String", init_val = e1_choices[1])
 event2_choices = @use_fields!("Bool", init_val = false)
 investment_choices = @use_fields!("Vector", init_val = [])
 available_invest_choices = ["Investment A", "Investment B", "Investment C"]
@@ -15,7 +17,7 @@ row_names = OrderedDict(:Choices => append!(["Event 1", "Event 2"], available_in
 df = DataFrame(;merge(row_names,OrderedDict((Symbol("Team $t_id")=>["", "", "", "", ""] for t_id = team_ids)...))...)
 choices_table = @use_field!("DataTable", init_val = DataTable(df))
 
-data = Dict{String, Vector{Float64}}("little" => [17.85, 13.76], "moderate" => [24.8, 20.59], "high" => [33.02, 28.67])
+data = Dict{String, Vector{Float64}}(e1_choices[1] => [15, 10], e1_choices[2] => [25, 20], e1_choices[3] => [35, 30])
 plotdata = @use_field!("VectorPlotData", 
                     init_val = [PlotData(x = team_ids, y = zeros(num_teams), plot = "bar", text = ["", "", "", ""], textposition = "outside")])
 plotconfig = @use_field!("PlotConfig")
@@ -57,7 +59,7 @@ for t_id in team_ids
         handler_helper(t_id)
     end
     new_listener(event2_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][2] = choice ? "yes" : "no"
+        choices_table.ref.data[!, t_id+1][2] = choice ? e2_choice : ""
         handler_helper(t_id)
     end
     new_listener(investment_choices[t_id]) do choices
@@ -82,13 +84,13 @@ end
 
 team_id = params[:team_id]::Int
 @slide(
-    h1("Choose wisely!"), 
+    h1("Here you can choose between different options"), 
     spacer("2vw"),
-    row_c([span("Event 1: "), radio("little", event1_choices[team_id].sym, val = "little"),
-    radio("moderate", event1_choices[team_id].sym, val = "moderate"),
-    radio("high", event1_choices[team_id].sym, val = "high")]),
+    row_c([span("Choice set 1:"), radio(e1_choices[1], event1_choices[team_id].sym, val = e1_choices[1]),
+    radio(e1_choices[2], event1_choices[team_id].sym, val = e1_choices[2]),
+    radio(e1_choices[3], event1_choices[team_id].sym, val = e1_choices[3])]),
     row_c(
-    [span("Event 2:"), toggle("Yes?", event2_choices[team_id].sym),
+    [span("Choice 2:"), toggle(e2_choice, event2_choices[team_id].sym),
     ]),
     spacer("2vw"),
     row_c(p("Investments (pick 2):")), 
@@ -105,7 +107,7 @@ team_id = params[:team_id]::Int
 
 content = [cell(plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym); size = 11 - 2 * (4 - num_teams))]
 
-team_description(t_id) = p(["Team $t_id:<br>", span("", @text("$(event1_choices[t_id].str)")), "<br>", span("", @text("$(event2_choices[t_id].str)"))],
+team_description(t_id) = p(["Team $t_id:<br>", span("", @text("$(event1_choices[t_id].str)")), "<br>", span("", @text(event2_choices[t_id].str[1][1]))],
                             style = "font-size:0.8rem")
 
 if num_teams < 3
@@ -115,7 +117,8 @@ end
 @slide(
     h1("Events - Outcomes"), 
     spacer("1vw"),
-    row_c(p("Each team's bar depends on the choice the team made previously.", style = "margin-bottom:-50px; z-index:1")),
+    row_c(p("Each team's bar depends on the choices the team made previously (investments have no effect currently).",
+            style = "margin-bottom:-50px; z-index:1")),
     row_c(content),
     params[:show_whole_slide] ? row(p("Here's some info which can only be seen by the speaker. 
     This view can be accessed by accessing the URL '.../0' or passing ?shift=1 as an URL parameter"), style = "color:red") : "",
