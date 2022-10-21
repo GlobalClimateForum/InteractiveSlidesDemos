@@ -63,11 +63,10 @@ code_content = code(
 , class)
 
 code_startapp = code(
-    """#startapp.jl
+    """#startapp.jl (simplified)
     using Revise
     __revise_mode__ = :eval
-    includet("src/" * Pkg.project().name * ".jl")
+    includet("src/InteractiveSlidesDemos.jl")
     
-    #this executes InteractiveSlidesDemos.jl
-    #which in turn includes content.jl"""
+    #this executes InteractiveSlidesDemos.jl"""
 , class)

@@ -19,7 +19,7 @@ title = "The Genie framework"
     h1("You can thus use modern web technologies for creating your slideshow"), 
     row(class = "items-center justify-around",
     [cell(size=1), 
-     cell(p("For example, this slide is responsive. E.g., the picture here only shows for wide screens (try resizing the window). 
+     cell(p("For example, this slide is responsive. E.g., the picture here only shows on wide screens (try resizing the window). 
      <a href=https://v1.quasar.dev/style/visibility>This behavior</a> and other UI stuff is enabled by 
      Quasar (which is shipped with the Genie framework).")),
      img(src = "img/samplepic.jpg", style = "max-width: 45vmax", class = "gt-sm")]
