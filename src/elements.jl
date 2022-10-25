@@ -1,6 +1,6 @@
 row_c(args...; kwargs...) = row(class = "flex-center text-center", args...; kwargs...) # just a convenience function
 
-# below example code for a draggable tree component is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
+# below example code for a draggable tree component (see slide 8) is taken from https://github.com/GenieFramework/StippleDemos/tree/master/AdvancedExamples/DraggableTree
 function filedict(startfile)
     dict(; kwargs...) = Dict{Symbol, Any}(kwargs...)
     if isdir(startfile)
@@ -48,16 +48,14 @@ code_InteractiveSlidesDemos = code(
 
 code_content = code(
     """#content.jl
-    function gen_content(pmodel::PresentationModel, params::Dict)
-
-        slides = Slide[]
-        slides = introduction(pmodel, params, slides)
-        slides = main(pmodel, params, slides)
+    function gen_content(pmodel::PresentationModel, paras::Dict)
+        slides = Vector{Slide}()
+        slides = introduction(pmodel, paras, slides)
+        slides = main(pmodel, paras, slides)
         
-        auxUI = #code defining header, footer, and drawer
+        auxUI = [code defining header, footer, and drawer]
         
         return slides, auxUI
-        
     end
     """
 , class)
