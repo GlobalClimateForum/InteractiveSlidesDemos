@@ -107,7 +107,7 @@ team_id = params[:team_id]::Int
 
 content = [cell(plot(plotdata.sym, layout = plotlayout.sym, config = plotconfig.sym); size = 11 - 2 * (4 - num_teams))]
 
-team_description(t_id) = p(["Team $t_id:<br>", span("", @text("$(event1_choices[t_id].str)")), "<br>", span("", @text(event2_choices[t_id].str[1][1]))],
+team_description(t_id) = p(["Team $t_id:<br>", span("", @text(event1_choices[t_id].str)), "<br>", span("", @text("""$(event2_choices[t_id].str) ? "$e2_choice" : "" """))],
                             style = "font-size:0.8rem")
 
 if num_teams < 3
