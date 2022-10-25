@@ -48,10 +48,10 @@ code_InteractiveSlidesDemos = code(
 
 code_content = code(
     """#content.jl
-    function gen_content(pmodel::PresentationModel, paras::Dict)
+    function gen_content(pmodel::PresentationModel, params::Dict)
         slides = Vector{Slide}()
-        slides = introduction(pmodel, paras, slides)
-        slides = main(pmodel, paras, slides)
+        slides = introduction(pmodel, params, slides)
+        slides = main(pmodel, params, slides)
         
         auxUI = [code defining header, footer, and drawer]
         

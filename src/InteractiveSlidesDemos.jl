@@ -13,7 +13,7 @@ using InteractiveSlides, StipplePlotly
     @addfields(2, ::DataTable, DataTable())
     @addfields(2, ::DataTablePagination, DataTablePagination())
     @addfields(5, ::Vector{PlotData}, [PlotData()])
-    files::R{Vector{Dict{Symbol, Any}}} = []
+    files::R{Vector{Dict{Symbol, Any}}} = [filedict(dirname(@__DIR__))] #used by draggable_tree() (referred to by :files in introduction.jl). Note: Needs to be assigned here, otherwise component will disappear upon dragging
 end
 
 includet("elements.jl") #mostly additional code for a custom component used on slide number 6 

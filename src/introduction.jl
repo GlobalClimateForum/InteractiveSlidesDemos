@@ -64,11 +64,10 @@ title = "Timer"
     img(src = "img/scheme.png", style = "height: 90%"),
 )
 
-pmodel.files[] = [filedict(dirname(@__DIR__))] #used by draggable_tree() below (referred to by :files)
 @slide(h1("Let's look at the project folder of this presentation (click on the folder!)"), 
     row([
 
-    draggabletree(:files; style = "font-size:0.75rem"),
+    draggabletree(:files, rowkey = "key", group = "test"; style = "font-size:0.75rem"),
 
     Html.div([
     pre(code_startapp),
