@@ -96,9 +96,8 @@ class = "scroll-always", num_states = 4
                     img(src = "img/scheme.jpg", 
                         style = "max-height: 60vh")
                 )""", 
-            class = "language-julia hljs", style = "width: 90%; margin:auto"))],
-
-    lclass = "text-center"),
+            class = "language-julia hljs", style = "width: 100%; margin:auto"))],
+    ),
 title = "Creating slides is easy"
 )
 
