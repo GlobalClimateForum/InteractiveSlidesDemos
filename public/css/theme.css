@@ -180,7 +180,7 @@ th:first-child { /* hides top left column heading of StippleUI table */
     background-color: var(--q-color-white);
 }
 
-.q-drawer .q-list, pre code, .q-tooltip {
+.q-list, pre code, .q-tooltip {
     font-size: 0.65rem;
 }
 
@@ -191,6 +191,7 @@ th:first-child { /* hides top left column heading of StippleUI table */
 .q-field__native { /* for (select) input field */
     justify-content:center;
     font-size: 1rem;
+    line-height: 1rem;
 }
 
 .q-table tbody td, .q-table th { /* for datatable */
