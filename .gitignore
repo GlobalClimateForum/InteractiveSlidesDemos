@@ -4,6 +4,7 @@ out/*
 
 # App
 *build/*
+*tmp/*
 *cache/*
 *config/secrets.jl
 *docs/build

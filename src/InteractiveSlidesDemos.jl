@@ -1,7 +1,7 @@
 using Revise, DataStructures, CSV
 import DataFrames.DataFrame
 
-using InteractiveSlides, StipplePlotly
+using InteractiveSlides
 
 @presentation! struct PresentationModel <: ReactiveModel
     @addfields(10, ::Int, 0)
