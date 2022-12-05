@@ -60,26 +60,10 @@ for t_id in team_ids
         handler_helper(t_id)
     end
 end
-end
 
-if params[:init]
-for t_id in team_ids
-    new_listener(event1_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][1] = choice
-        notify(choices_table.ref)
-    end
-    new_listener(event2_choices[t_id]) do choice
-        choices_table.ref.data[!, t_id+1][2] = choice ? e2_choice : ""
-        notify(choices_table.ref)
-    end
-    new_listener(investment_choices[t_id]) do choices
-        if length(choices) == 2
-            choices_bool = contains.(available_invest_choices, choices[1]) .|| contains.(available_invest_choices, choices[2])
-            choices_table.ref.data[!, t_id+1][3:5] = [choice ? "✓" : "" for choice in choices_bool]
-        end
-        notify(choices_table.ref)
-    end
-end
+handle_table(num_teams, choices_table, 1, event1_choices)
+handle_table(num_teams, choices_table, 2, event2_choices, dict = Dict(false => "", true => e2_choice))
+handle_table(num_teams, choices_table, 3:5, investment_choices, available_invest_choices)
 end
 #endregion
 
