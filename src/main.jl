@@ -36,7 +36,6 @@ function handler_helper(t_id)
     xticktext = num_teams > 2 ? "Team $t_id<br>$(choices_table.ref.data[!, t_id+1][1])<br>$(choices_table.ref.data[!, t_id+1][2])" : "Team $t_id"
     plotlayout.ref.xaxis[1].ticktext[t_id] = xticktext
     plotlayout.ref.yaxis[1].range[2] = max(plotdata.ref[1].y...) + 5 #https://github.com/plotly/plotly.js/issues/2001
-    notify(choices_table.ref)
     notify(plotdata.ref)
     notify(plotlayout.ref)
 end
@@ -54,13 +53,24 @@ for t_id in team_ids
             CSV.write("out/choices $time.csv", choices_table.ref[].data)
         end
     end
+    new_listener(event1_choices[t_id]) do _
+        handler_helper(t_id)
+    end
+    new_listener(event2_choices[t_id]) do _
+        handler_helper(t_id)
+    end
+end
+end
+
+if params[:init]
+for t_id in team_ids
     new_listener(event1_choices[t_id]) do choice
         choices_table.ref.data[!, t_id+1][1] = choice
-        handler_helper(t_id)
+        notify(choices_table.ref)
     end
     new_listener(event2_choices[t_id]) do choice
         choices_table.ref.data[!, t_id+1][2] = choice ? e2_choice : ""
-        handler_helper(t_id)
+        notify(choices_table.ref)
     end
     new_listener(investment_choices[t_id]) do choices
         if length(choices) == 2
