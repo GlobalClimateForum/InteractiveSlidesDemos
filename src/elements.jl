@@ -68,30 +68,3 @@ code_startapp = code(
     
     #this executes InteractiveSlidesDemos.jl"""
 , class)
-
-
-function handle_table(num_teams, table, rows, fields; dict = Dict(false => "", true => "✓"))
-    typeof(rows) != Vector && (rows = [rows])
-    typeof(fields) != Vector && (fields = [fields])
-    for t_id in 1:num_teams
-        for (id, field) in enumerate(fields)
-            new_listener(field[t_id]) do choice
-                output = get(dict, choice, string(choice))
-                table.ref.data[!, t_id+1][rows[id]] = output
-                notify(table.ref)
-            end
-        end
-    end
-end
-
-function handle_table(num_teams, table, rows, field, available_choices; notchosen = "", chosen = "✓")
-    for t_id in 1:num_teams
-        new_listener(field[t_id]) do choices
-            if length(choices) == 2
-                choices_bool = contains.(available_choices, choices[1]) .|| contains.(available_choices, choices[2])
-                table.ref.data[!, t_id+1][rows] = [choice ? chosen : notchosen for choice in choices_bool]
-            end
-            notify(table.ref)
-        end
-    end
-end

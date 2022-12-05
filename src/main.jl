@@ -61,9 +61,9 @@ for t_id in team_ids
     end
 end
 
-handle_table(num_teams, choices_table, 1, event1_choices)
-handle_table(num_teams, choices_table, 2, event2_choices, dict = Dict(false => "", true => e2_choice))
-handle_table(num_teams, choices_table, 3:5, investment_choices, available_invest_choices)
+@table_listener(choices_table, 1, event1_choices)
+@table_listener(choices_table, 2, event2_choices, dict = Dict(false => "", true => e2_choice))
+@table_listener(choices_table, 3:5, investment_choices, available_invest_choices)
 end
 #endregion
 
