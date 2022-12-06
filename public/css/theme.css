@@ -35,11 +35,12 @@
     --q-color-warning: #f2c037;
     --q-color-white: white;
     --q-color-black: rgb(31, 31, 31);
+    --bg-color: var(--q-color-white);
 }
 
 body {
     color:var(--q-color-black);
-    background-color: var(--q-color-white);
+    background-color: var(--bg-color);
 }
 
 .menu_titleslide { 

@@ -23,4 +23,4 @@ includet("content.jl") #this file defines gen_content() which is passed to serve
 
 serve_presentation(PresentationModel, gen_content; num_teams_default = 2, max_num_teams = 4, isdev = true)
 
-Genie.up(8080, "0.0.0.0", open_browser = true) #with 0.0.0.0, you can access the presentation from any device in your local network (using the IP of the device you are hosting with)
+Genie.up(80, "0.0.0.0", open_browser = true, ws_port = 80) #with 0.0.0.0, you can access the presentation from any device in your local network (using the IP of the device you are hosting with)
