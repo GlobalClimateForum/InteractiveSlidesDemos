@@ -28,7 +28,7 @@ class = "language-julia hljs"
 
 code_InteractiveSlidesDemos = code(
     """#InteractiveSlidesDemos.jl
-    using InteractiveSlides, StipplePlotly, #3 more
+    using InteractiveSlides
 
     @presentation! struct PresentationModel <: ReactiveModel
         files::R{Vector{Dict{Symbol, Any}}} = []

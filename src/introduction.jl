@@ -11,7 +11,9 @@ function introduction(pmodel::PresentationModel, params::Dict, slides::Vector{Sl
 #It thus often may be preferable/necessary to use the functions supplied by Genie, Stipple and StippleUI (see code below).
 
 @simpleslide(h1("InteractiveSlides.jl is powered by the <a href=https://genieframework.com>Genie framework</a>"), 
-    iframe(src = "https://genieframework.com", width="90%", height="90%"),
+    p("\"Genie Framework includes all you need to quickly build production-ready web applications with Julia. 
+    Develop Julia backends, create beautiful web UIs, build data applications and dashboards, integrate with 
+    databases and set up high-performance web services and APIs.\"", style = "max-width:70%"),
 title = "The Genie framework"
 )
 

@@ -41,30 +41,20 @@ function handler_helper(t_id)
 end
 
 #Handlers
-if params[:init]
 for t_id in team_ids
-    new_listener(@getslidefield(t_id)) do id
-        if id == pmodel.num_slides[]
-            try mkdir("out") catch end
-            time = Dates.format(Dates.now(), "yy-mm-dd at HH:MM")
-            open("out/feedback $time.html", "w") do io
-                write(io, feedback.ref[])
-            end
-            CSV.write("out/choices $time.csv", choices_table.ref[].data)
-        end
-    end
-    new_listener(event1_choices[t_id]) do _
+    @new_listener(event1_choices[t_id]) do _
         handler_helper(t_id)
     end
-    new_listener(event2_choices[t_id]) do _
+    @new_listener(event2_choices[t_id]) do _
         handler_helper(t_id)
     end
 end
 
+@save(feedback, "feedback")
+@save(choices_table, "choices")
 @table_listener(choices_table, 1, event1_choices)
 @table_listener(choices_table, 2, event2_choices, dict = Dict(false => "", true => e2_choice))
 @table_listener(choices_table, 3:5, investment_choices, available_invest_choices)
-end
 #endregion
 
 

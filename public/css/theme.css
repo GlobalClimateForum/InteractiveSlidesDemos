@@ -14,14 +14,6 @@
 /*#endregion*/
 
 
-/*#region hide items during loading of page */
-
-[v-cloak] { /* https://v2.vuejs.org/v2/api/#v-cloak */ 
-    display: none;
-  }
-/*#endregion*/
-
-
 /*#region main colors */
 
 :root {
