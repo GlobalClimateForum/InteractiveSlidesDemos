@@ -4,7 +4,6 @@ authors = ["Global Climate Forum, Jochen Krattenmacher"]
 version = "8.2"
 
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
@@ -16,5 +15,5 @@ Stipple = "4acbeb90-81a0-11ea-1966-bdaff8155998"
 Genie = "5"
 DataFrames = "1"
 DataStructures = "0.18"
-InteractiveSlides = "0.34"
+InteractiveSlides = "0.35"
 Revise = "3"
